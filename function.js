@@ -9,3 +9,14 @@ registerBtn.addEventListener('click', () => {
 loginBtn.addEventListener('click', () => {
     container.classList.remove("active");
 });
+
+// function.js
+
+// Logic for redirection after successful sign-in on signuplogin.html
+document.querySelector('.sign-in form').addEventListener('submit', function(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+
+    // Redirect to the user dashboard page after successful sign-in
+    window.location.href = 'userdash.html';
+});
