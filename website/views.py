@@ -7,7 +7,7 @@ views = Blueprint('views', __name__)
 # ---Main Page---
 @views.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template("mainpage.html")
+    return render_template("mainpage.html", user=current_user)
 
 # ---User Dashboard Page---
 @views.route('/userdash', methods=['GET', 'POST'])
