@@ -17,7 +17,6 @@ body{
     justify-content: center;
     flex-direction: column;
     height: 100vh;
-    padding-top: 60px;
 }
 
 .container{
@@ -210,11 +209,4 @@ body{
 
 .container.active .toggle-right{
     transform: translateX(200%);
-}
-
-.card img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
 }

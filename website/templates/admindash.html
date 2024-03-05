@@ -3,7 +3,7 @@
     <head>
       <meta charset="UTF-8" />
       <title>Attendance Dashboard | By Code Info</title>
-      <link rel="stylesheet" href="style.css" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
       <!-- Font Awesome Cdn Link -->
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
     </head>
@@ -12,7 +12,7 @@
         <nav>
           <ul>
             <li><a href="#" class="logo">
-              <img src="./images3/adminlogo.png">
+              <img src="{{ url_for('static', filename='images/adminlogo.png') }}">
               <span class="nav-item">Admin</span>
             </a></li>
             <li><a href="#">
@@ -36,7 +36,7 @@
               <span class="nav-item">Settings</span>
             </a></li>
     
-            <li><a href="#" class="logout">
+            <li><a id="logout" class="logout" href="/logout">
               <i class="fas fa-sign-out-alt"></i>
               <span class="nav-item">Log out</span>
             </a></li>
@@ -51,7 +51,7 @@
           </div>
           <div class="users">
             <div class="card">
-              <img src="./images3/profile1.jpg">
+              <img src="{{ url_for('static', filename='images/profile1.jpg') }}">
               <h4>Allen Takahashi</h4>
               <p>Newly Registered</p>
               <div class="per">
@@ -60,7 +60,7 @@
               <button>Profile</button>
             </div>
             <div class="card">
-              <img src="./images3/profile2.jpg">
+              <img src="{{ url_for('static', filename='images/profile2.jpg') }}">
               <h4>Michael Jackson</h4>
               <p>Newly Registered</p>
               <div class="per">
@@ -69,7 +69,7 @@
               <button>Profile</button>
             </div>
             <div class="card">
-              <img src="./images3/profile3.png">
+              <img src="{{ url_for('static', filename='images/profile3.png') }}">
               <h4>Hee Hee</h4>
               <p>Newly Registered</p>
               <div class="per">
@@ -78,7 +78,7 @@
               <button>Profile</button>
             </div>
             <div class="card">
-              <img src="./images3/mcquen1.jpg">
+              <img src="{{ url_for('static', filename='images/mcquen1.jpg') }}">
               <h4>Lightning McQueen</h4>
               <p>Newly Registered</p>
               <div class="per">

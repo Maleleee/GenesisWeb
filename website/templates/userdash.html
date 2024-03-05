@@ -6,7 +6,7 @@
     <title>User Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-    <link rel="stylesheet" href="./styleuser.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleuser.css') }}">
 </head>
 <body>
     <div class="grid-container">
@@ -66,6 +66,11 @@
                         <span class="material-icons-outlined">settings</span> Settings
                     </a>
                 </li>
+                <li class="sidebar-list-item">
+                    <a id="logout" href="/logout">
+                        <span class="material-icons-outlined">logout</span> Logout
+                    </a>
+                </li>
             </ul>
         </aside>
         <main class="main-container">
@@ -107,6 +112,6 @@
         </main>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.3/apexcharts.min.js"></script>
-    <script src="./userfunctions.js"></script>
+    <script src="{{ url_for('static', filename='userfunctions.js') }}"></script>
 </body>
 </html>
