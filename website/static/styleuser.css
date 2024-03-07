@@ -286,3 +286,8 @@ body {
       display: none;
     }
   }
+
+  a{
+    width: 280px;
+    display: table;
+  }
