@@ -1,7 +1,8 @@
-from . import db
+from website import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 from datetime import datetime
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
