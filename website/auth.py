@@ -27,7 +27,10 @@ GITHUB_SCOPE = 'user:email'
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('views.userdash'))
+        if current_user.is_admin:  # Check if the user is an admin
+            return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
+        else:
+            return redirect(url_for('views.userdash'))  # Redirect to user dashboard
 
     signup_form = SignUpForm()
     login_form = LoginForm()
@@ -58,7 +61,15 @@ def login():
             if user and check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 flash('Logged in successfully!', 'success')
-                return redirect(url_for('views.userdash'))
+                if user.username == 'admin':
+                    user.is_admin = True
+                else: 
+                    user.is_admin = False
+                db.session.commit()
+                if user.is_admin:  # Check if the user is an admin
+                    return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
+                else:
+                    return redirect(url_for('views.userdash'))  # Redirect to user dashboard
             else:
                 flash('Invalid email or password.', 'error')
 
