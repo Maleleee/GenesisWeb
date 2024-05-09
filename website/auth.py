@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from .models import User
 from .forms import SignUpForm, LoginForm
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,13 +8,21 @@ import requests
 
 auth = Blueprint('auth', __name__)
 
-# OAuth configuration
-CLIENT_ID = '992785662567-oeltunnotl5ft2432u206iv9c980emj2.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
-REDIRECT_URI = 'http://localhost:5000/google-authorized'
-AUTHORIZE_URL = 'https://accounts.google.com/o/oauth2/auth'
-TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
-SCOPE = 'email profile'
+# OAuth configuration for Google
+GOOGLE_CLIENT_ID = '992785662567-oeltunnotl5ft2432u206iv9c980emj2.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_REDIRECT_URI = 'http://localhost:5000/google-authorized'
+GOOGLE_AUTHORIZE_URL = 'https://accounts.google.com/o/oauth2/auth'
+GOOGLE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
+GOOGLE_SCOPE = 'email profile'
+
+# OAuth configuration for GitHub
+GITHUB_CLIENT_ID = 'Ov23li8BNyKIHZmGnlUm'
+GITHUB_CLIENT_SECRET = '941bde3c8ae1aabd8006045249b0a1bfabaffc20'
+GITHUB_REDIRECT_URI = 'http://localhost:5000/github-authorized'
+GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
+GITHUB_TOKEN_URL = 'https://github.com/login/oauth/access_token'
+GITHUB_SCOPE = 'user:email'
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -34,12 +42,8 @@ def login():
 
             user = User.query.filter_by(email=email).first()
             if not user:
-                if username == 'admin':
-                    new_user = User(email=email, username=username,
-                                    password=generate_password_hash(password, method='pbkdf2:sha256'), is_admin=True)
-                else:
-                    new_user = User(email=email, username=username,
-                                    password=generate_password_hash(password, method='pbkdf2:sha256'))
+                new_user = User(email=email, username=username,
+                                password=generate_password_hash(password, method='pbkdf2:sha256'))
                 db.session.add(new_user)
                 db.session.commit()
                 flash('Account created successfully! You can now sign in.', 'success')
@@ -54,10 +58,7 @@ def login():
             if user and check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 flash('Logged in successfully!', 'success')
-                if user.is_admin:
-                    return redirect(url_for('views.admindash'))
-                else:
-                    return redirect(url_for('views.userdash'))
+                return redirect(url_for('views.userdash'))
             else:
                 flash('Invalid email or password.', 'error')
 
@@ -65,7 +66,7 @@ def login():
 
 @auth.route('/google-login')
 def google_login():
-    auth_url = f'{AUTHORIZE_URL}?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&scope={SCOPE}&response_type=code'
+    auth_url = f'{GOOGLE_AUTHORIZE_URL}?client_id={GOOGLE_CLIENT_ID}&redirect_uri={GOOGLE_REDIRECT_URI}&scope={GOOGLE_SCOPE}&response_type=code'
     return redirect(auth_url)
 
 @auth.route('/google-authorized')
@@ -73,30 +74,60 @@ def google_authorized():
     code = request.args.get('code')
     data = {
         'code': code,
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-        'redirect_uri': REDIRECT_URI,
+        'client_id': GOOGLE_CLIENT_ID,
+        'client_secret': GOOGLE_CLIENT_SECRET,
+        'redirect_uri': GOOGLE_REDIRECT_URI,
         'grant_type': 'authorization_code'
     }
-    response = requests.post(TOKEN_URL, data=data)
+    response = requests.post(GOOGLE_TOKEN_URL, data=data)
     access_token = response.json().get('access_token')
-
     # Use the access token to fetch user profile information from Google
     profile_info = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', params={'access_token': access_token}).json()
     email = profile_info.get('email')
 
     # Check if the user exists in your database
-    user = User.query.filter_by(email=email).first() # right now users that register through email are identified as "users" by default
+    user = User.query.filter_by(email=email).first()
     if not user:
         # If the user does not exist, create a new user
-        user = User(email=email, is_admin=False)  # Set is_admin to False for common users
+        user = User(email=email)
         db.session.add(user)
         db.session.commit()
 
     login_user(user, remember=True)
     flash('Logged in successfully via Google!', 'success')
+    return redirect(url_for('views.userdash'))
 
-    # Redirect the user to the appropriate dashboard
+@auth.route('/github-login')
+def github_login():
+    auth_url = f'{GITHUB_AUTHORIZE_URL}?client_id={GITHUB_CLIENT_ID}&redirect_uri={GITHUB_REDIRECT_URI}&scope={GITHUB_SCOPE}&response_type=code'
+    return redirect(auth_url)
+
+@auth.route('/github-authorized')
+def github_authorized():
+    code = request.args.get('code')
+    data = {
+        'client_id': GITHUB_CLIENT_ID,
+        'client_secret': GITHUB_CLIENT_SECRET,
+        'code': code,
+        'redirect_uri': GITHUB_REDIRECT_URI
+    }
+    response = requests.post(GITHUB_TOKEN_URL, data=data, headers={'Accept': 'application/json'})
+    access_token = response.json().get('access_token')
+    # Use the access token to fetch user profile information from GitHub
+    headers = {'Authorization': f'token {access_token}'}
+    profile_info = requests.get('https://api.github.com/user', headers=headers).json()
+    email = profile_info.get('email')
+
+    # Check if the user exists in your database
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        # If the user does not exist, create a new user
+        user = User(email=email)
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user, remember=True)
+    flash('Logged in successfully via GitHub!', 'success')
     return redirect(url_for('views.userdash'))
 
 @auth.route('/logout')

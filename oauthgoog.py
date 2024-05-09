@@ -4,7 +4,7 @@ from flask import Flask, redirect, url_for, session, request
 app = Flask(__name__)
 app.secret_key = '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'
 
-# OAuth configuration
+# OAuth configuration for Google
 CLIENT_ID = '992785662567-oeltunnotl5ft2432u206iv9c980emj2.apps.googleusercontent.com'
 CLIENT_SECRET = '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'
 REDIRECT_URI = 'http://localhost:5000/oauth_callback'
