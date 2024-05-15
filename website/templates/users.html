@@ -1,0 +1,14 @@
+<html>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Username</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.email }}</td>
+        <td>{{ user.username }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</html>
