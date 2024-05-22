@@ -30,7 +30,7 @@ def login():
         if current_user.is_admin:  # Check if the user is an admin
             return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
         else:
-            return redirect(url_for('views.userdash'))  # Redirect to user dashboard
+            return redirect(url_for('views.userdashv2'))  # Redirect to user dashboard
 
     signup_form = SignUpForm()
     login_form = LoginForm()
@@ -49,9 +49,9 @@ def login():
                                 password=generate_password_hash(password, method='pbkdf2:sha256'))
                 db.session.add(new_user)
                 db.session.commit()
-                flash('Account created successfully! You can now sign in.', 'success')
+                flash('Account created successfully! You can now sign in.', 'success') # need pop up message
             else:
-                flash('Email already exists. Please sign in.', 'error')
+                flash('Email already exists. Please sign in.', 'error') # need pop up message
         elif form_type == 'login' and login_form.validate_on_submit():
             # Login logic
             email = login_form.email.data
@@ -60,7 +60,7 @@ def login():
             user = User.query.filter_by(email=email).first()
             if user and check_password_hash(user.password, password):
                 login_user(user, remember=True)
-                flash('Logged in successfully!', 'success')
+                flash('Logged in successfully!', 'success') # need pop up message
                 if user.username == 'admin':
                     user.is_admin = True
                 else: 
@@ -69,9 +69,9 @@ def login():
                 if user.is_admin:  # Check if the user is an admin
                     return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
                 else:
-                    return redirect(url_for('views.userdash'))  # Redirect to user dashboard
+                    return redirect(url_for('views.userdashv2'))  # Redirect to user dashboard
             else:
-                flash('Invalid email or password.', 'error')
+                flash('Invalid email or password.', 'error') # need pop up message
 
     return render_template("signuplogin.html", signup_form=signup_form, login_form=login_form)
 
@@ -105,8 +105,8 @@ def google_authorized():
         db.session.commit()
 
     login_user(user, remember=True)
-    flash('Logged in successfully via Google!', 'success')
-    return redirect(url_for('views.userdash'))
+    flash('Logged in successfully via Google!', 'success') 
+    return redirect(url_for('views.userdashv2'))
 
 @auth.route('/github-login')
 def github_login():
@@ -138,8 +138,8 @@ def github_authorized():
         db.session.commit()
 
     login_user(user, remember=True)
-    flash('Logged in successfully via GitHub!', 'success')
-    return redirect(url_for('views.userdash'))
+    flash('Logged in successfully via GitHub!', 'success') 
+    return redirect(url_for('views.userdashv2'))
 
 @auth.route('/logout')
 @login_required
