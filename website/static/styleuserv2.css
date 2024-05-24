@@ -41,6 +41,8 @@ body {
 }
 
 .menu {
+    display: flex;
+    flex-direction: column;
     height: calc(100% - 80px - 50px); /* Adjust height considering logo and logout */
     position: relative;
     list-style: none;
@@ -78,6 +80,7 @@ body {
 }
 
 .logout {
+    margin-top: auto; /* Ensure logout is at the bottom */
     padding: 1rem;
     border-radius: 8px;
     transition: all 0.5s ease-in-out;
@@ -91,6 +94,7 @@ body {
     align-items: center;
     gap: 1.5rem;
 }
+
 
 /* Main Content */
 .main--content {
