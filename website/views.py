@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, url_for, redirect, request
 from flask_login import login_required, current_user
 from . import db
-from . models import User
+from . models import User, Transaction
 from flask import jsonify
 from .models import User
 import os
 from datetime import date
+
 
 TRANSACTION_FILE = 'transactions.txt'
 DEFAULT_BALANCE = 500000
@@ -25,14 +26,14 @@ def get_recent_transaction(transactions, transaction_type):
     return None
 
 # User Dashboard Page
-@views.route('/userdashv2', methods=['GET', 'POST'])
+@views.route('/userdash', methods=['GET', 'POST'])
 @login_required
-def userdashv2():
-    transactions = read_transactions_from_file()
-    balance = calculate_account_balance(transactions)
-    recent_withdrawal = get_recent_transaction(transactions, 'expense')
-    recent_deposit = get_recent_transaction(transactions, 'income')
-    return render_template("userdashv2.html", user=current_user, transactions=transactions, balance=balance, recent_withdrawal=recent_withdrawal, recent_deposit=recent_deposit)
+def userdash():
+    transactions = Transaction.query.filter_by(user_id=current_user.id).all()
+    recent_withdrawal = next((t for t in reversed(transactions) if not t.transaction_type), None)
+    recent_deposit = next((t for t in reversed(transactions) if t.transaction_type), None)
+    print(recent_deposit)
+    return render_template("userdash.html", user=current_user, transactions=transactions, balance=current_user.balance, recent_withdrawal=recent_withdrawal, recent_deposit=recent_deposit)
 
 # Admin Dashboard Page
 @views.route('/admindash', methods=['GET', 'POST'])
@@ -40,7 +41,7 @@ def userdashv2():
 def admindash():
     # Only allow admin users to access this page
     if not current_user.is_admin:
-        return redirect(url_for('views.userdashv2'))
+        return redirect(url_for('views.userdash'))
     # Fetch user data from the database
     users = User.query.all()
     return render_template("admindash.html", user=current_user, users=users)
@@ -73,7 +74,7 @@ def make_transaction():
     write_transaction_to_file(date, transaction_type, description, amount, category, status)
     
     # Redirect back to user dashboard
-    return redirect(url_for('views.userdashv2'))
+    return redirect(url_for('views.userdash'))
 
     
 # Function to calculate the account balance
@@ -116,10 +117,6 @@ def show_transaction_form():
     return render_template('transaction_form.html')
 
 
-
-
-
-
 # Withdraw Page
 @views.route('/withdraw', methods=['GET'])
 @login_required
@@ -129,14 +126,16 @@ def show_withdraw_form():
 @views.route('/withdraw', methods=['POST'])
 @login_required
 def withdraw():
-    # Get form data
-    amount = float(request.form['amount'])
-    
-    # Write withdrawal transaction to text file
-    write_transaction_to_file(date.today().strftime('%Y-%m-%d'), 'expense', 'Withdrawal', amount, 'withdrawal', 'completed')
-    
-    # Redirect back to user dashboard
-    return redirect(url_for('views.userdashv2'))
+    amount = float(request.form.get('amount'))
+    if current_user.balance < amount:
+        #Lagyan na lang ng message na not enough balance
+        return render_template('withdraw_form.html')
+    else:
+        current_user.balance -= amount
+        transaction = Transaction(user_id=current_user.id, transaction_type=False, amount=amount, status=True)
+        db.session.add(transaction)
+        db.session.commit()
+    return redirect(url_for('views.userdash'))
 
 
 #Deposit Form
@@ -146,15 +145,12 @@ def withdraw():
 def show_deposit_form():
     return render_template('deposit_form.html')
 
-# Handle deposit form submission
 @views.route('/deposit', methods=['POST'])
 @login_required
 def deposit():
-    # Get form data
-    amount = float(request.form['amount'])
-    
-    # Write deposit transaction to text file
-    write_transaction_to_file(date.today().strftime('%Y-%m-%d'), 'income', 'Deposit', amount, 'deposit', 'completed')
-    
-    # Redirect back to user dashboard
-    return redirect(url_for('views.userdashv2'))
+    amount = float(request.form.get('amount'))
+    current_user.balance += amount
+    transaction = Transaction(user_id=current_user.id, transaction_type=True, amount=amount, status=True)
+    db.session.add(transaction)
+    db.session.commit()
+    return redirect(url_for('views.userdash'))

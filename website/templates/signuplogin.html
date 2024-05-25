@@ -44,7 +44,16 @@
                 {{ login_form.password.label }}
                 {{ login_form.password() }}
                 {{ login_form.submit() }}
-                <a href="#">Forgot Your Password?</a>
+                <a href="{{ url_for('auth.forgot_password') }}">Forgot your password?</a>
+                {% with messages = get_flashed_messages(category_filter=['loginError', 'emailError']) %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="error">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             </form>
         </div>
         <div class="toggle-container">
@@ -58,6 +67,15 @@
                     <h1>Welcome back!</h1>
                     <p>Enter your personal details to use all site features</p>
                     <button class="hidden" id="register">Sign Up</button>
+                    {% with messages = get_flashed_messages(category_filter=['success']) %}
+                        {% if messages %}
+                            {% for message in messages %}
+                            <div class="success">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                 </div>
             </div>
         </div>

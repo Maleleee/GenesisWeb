@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styleuserv2.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleuser.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
@@ -65,7 +65,7 @@
                     <div class="card--header">
                         <div class="amount">
                             <span class="title">Account Balance</span>
-                            <span class="amount--value">P{{ '{:,.2f}'.format(balance) }}</span>
+                            <span class="amount--value">{{ balance }}</span>
                         </div>
                         <i class="fas fa-dollar-sign icon"></i>
                     </div>
@@ -75,12 +75,7 @@
                     <div class="card--header">
                         <div class="amount">
                             <span class="title">Recent Withdrawal </span>
-                            {% if recent_withdrawal %}
-                            <p>Date: {{ recent_withdrawal.date }}</p>
-                            <p>Amount: {{ recent_withdrawal.amount }}</p>
-                        {% else %}
-                            <p>No recent withdrawal</p>
-                        {% endif %}
+                            <h2>{{ recent_withdrawal.amount }}</h2>
                         </div>
                         <i class="fas fa-money-bill-wave icon dark-purple"></i>
                     </div>
@@ -89,12 +84,7 @@
                     <div class="card--header">
                         <div class="amount">
                             <span class="title">Recent Deposit</span>
-                            {% if recent_deposit %}
-                    <p>Date: {{ recent_deposit.date }}</p>
-                    <p>Amount: {{ recent_deposit.amount }}</p>
-                {% else %}
-                    <p>No recent deposit</p>
-                {% endif %}
+                            <h2>{{ recent_deposit.amount }}</h2>
                         </div>
                         <i class="fas fa-piggy-bank icon dark-green"></i>
                     </div>
@@ -118,24 +108,18 @@
                         <tr>
                             <th>Date</th>
                             <th>Transaction Type</th>
-                            <th>Description</th>
                             <th>Amount</th>
-                            <th>Category</th>
                             <th>Status</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for transaction in transactions %}
-                        <tr>
-                            <td>{{ transaction.date }}</td>
-                            <td>{{ transaction.transaction_type }}</td>
-                            <td>{{ transaction.description }}</td>
-                            <td>P{{ '{:,.2f}'.format(transaction.amount) }}</td>
-                            <td>{{ transaction.category }}</td>
-                            <td>{{ transaction.status }}</td>
-                            <td><button>Edit</button></td>
-                        </tr>
+                            <tr>
+                                <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ 'Deposit' if transaction.transaction_type else 'Withdraw' }}</td>
+                                <td>{{ transaction.amount }}</td>
+                                <td>{{ 'Success' if transaction.status else 'Failed' }}</td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>

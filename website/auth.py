@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
 from .models import User
 from .forms import SignUpForm, LoginForm
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
+from . import db, mail
 from flask_login import login_user, login_required, logout_user, current_user
 import requests
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from flask_mail import Message, Mail
+
 
 auth = Blueprint('auth', __name__)
 
@@ -30,7 +33,7 @@ def login():
         if current_user.is_admin:  # Check if the user is an admin
             return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
         else:
-            return redirect(url_for('views.userdashv2'))  # Redirect to user dashboard
+            return redirect(url_for('views.userdash'))  # Redirect to user dashboard
 
     signup_form = SignUpForm()
     login_form = LoginForm()
@@ -69,7 +72,7 @@ def login():
                 if user.is_admin:  # Check if the user is an admin
                     return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
                 else:
-                    return redirect(url_for('views.userdashv2'))  # Redirect to user dashboard
+                    return redirect(url_for('views.userdash'))  # Redirect to user dashboard
             else:
                 flash('Invalid email or password.', 'error') # need pop up message
 
@@ -106,7 +109,7 @@ def google_authorized():
 
     login_user(user, remember=True)
     flash('Logged in successfully via Google!', 'success') 
-    return redirect(url_for('views.userdashv2'))
+    return redirect(url_for('views.userdash'))
 
 @auth.route('/github-login')
 def github_login():
@@ -139,10 +142,64 @@ def github_authorized():
 
     login_user(user, remember=True)
     flash('Logged in successfully via GitHub!', 'success') 
-    return redirect(url_for('views.userdashv2'))
+    return redirect(url_for('views.userdash'))
+
+def get_serializer():
+    return URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+
+@auth.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    error = None
+    success = None
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user is None:
+            error = "The email you entered does not exist!"
+        else:
+            sec = get_serializer()
+            token = sec.dumps(email, salt='email-confirm')
+            msg = Message('Genesis Account Password Reset Request', sender='infogenesis.communications@gmail.com', recipients=[email])
+            link = url_for('auth.reset_password', token=token, _external=True)
+            msg.body = f"""
+            Hello,
+
+            We have received a request to reset the password for your Genesis account: {email}
+
+            If you submitted this request, please click the button below to proceed:
+
+            {link}
+            """
+            mail.send(msg)
+            success = "Successfully sent! Kindly check your email."
+    return render_template('forgotpass.html', error=error, success=success)
+
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    sec = get_serializer()
+    try:
+        email = sec.loads(token, salt='email-confirm', max_age=3600)
+    except SignatureExpired:
+        return '<h1>The token is expired!</h1>'
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if password != confirm_password:
+            return render_template('reset_password.html', token=token, error="The passwords do not match")
+        user = User.query.filter_by(email=email).first()
+        user.password = generate_password_hash(request.form['password'])
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('auth.login'))
+    return render_template('reset_password.html', token=token)
+
+
+
 
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
+
+

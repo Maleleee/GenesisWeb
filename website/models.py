@@ -2,29 +2,22 @@ from website import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 from datetime import datetime
-from . import db
-
-
+from sqlalchemy.orm import relationship
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150))
-    email = db.Column(db.String(150), unique=True)
-    password = db.Column(db.String(150))
+    username = db.Column(db.String(64))
+    email = db.Column(db.String(64), unique=True)
+    password = db.Column(db.String(128))
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     is_admin = db.Column(db.Boolean, default=False)
+    balance = db.Column(db.Float, default=0.0)
+    transactions = relationship('Transaction', backref='user')
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
-    transaction_type = db.Column(db.String(50), nullable=False)
-    description = db.Column(db.String(100), nullable=False) 
-    amount = db.Column(db.Float, nullable=False)
-    category = db.Column(db.String(50), nullable=False)
-    status = db.Column(db.String(50), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    def __repr__(self):
-        return f"Transaction('{self.date}', '{self.transaction_type}', '{self.description}', '{self.amount}', '{self.category}', '{self.status}')"
-
-    
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    transaction_date = db.Column(db.DateTime(timezone=True), default=func.now())
+    transaction_type = db.Column(db.Boolean)  # True = deposit, False = withdraw
+    amount = db.Column(db.Float)
+    status = db.Column(db.Boolean)  # True = success, False = failed
