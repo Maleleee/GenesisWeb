@@ -1,5 +1,5 @@
-from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
-from .models import User
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash, session
+from .models import User, LoginEvent
 from .forms import SignUpForm, LoginForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, mail
@@ -7,6 +7,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 import requests
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Message, Mail
+from datetime import datetime
+
 
 
 auth = Blueprint('auth', __name__)
@@ -26,6 +28,7 @@ GITHUB_REDIRECT_URI = 'http://localhost:5000/github-authorized'
 GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
 GITHUB_TOKEN_URL = 'https://github.com/login/oauth/access_token'
 GITHUB_SCOPE = 'user:email'
+
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -64,17 +67,34 @@ def login():
             if user and check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 flash('Logged in successfully!', 'success') # need pop up message
+                
+                timestamp = datetime.now()
+                
+                #Login Event
+                login_event = LoginEvent(
+                    email=user.email,
+                    username=user.username,
+                    timestamp=timestamp,
+                    status ='online'
+                    
+                )
+                db.session.add(login_event)
+                db.session.commit()
+                
                 if user.username == 'admin':
                     user.is_admin = True
                 else: 
                     user.is_admin = False
                 db.session.commit()
+                
                 if user.is_admin:  # Check if the user is an admin
                     return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
                 else:
                     return redirect(url_for('views.userdash'))  # Redirect to user dashboard
             else:
                 flash('Invalid email or password.', 'error') # need pop up message
+                
+            
 
     return render_template("signuplogin.html", signup_form=signup_form, login_form=login_form)
 
@@ -199,7 +219,16 @@ def reset_password(token):
 @auth.route('/logout')
 @login_required
 def logout():
+    # Logout logic
+    # Update status to "offline" when user logs out
+    user_id = session.get('user_id')
+    if user_id:
+        login_event = LoginEvent.query.filter_by(user_id=user_id, status='online').first()
+        if login_event:
+            login_event.status = 'offline'
+            db.session.commit()
+    
+    session.clear()  # Clear session data
     logout_user()
-    return redirect(url_for('auth.login'))
-
-
+    
+    return redirect(url_for('auth.login'))  # Redirect to login page after logout

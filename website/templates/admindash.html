@@ -1,126 +1,220 @@
-<span style="font-family: verdana, geneva, sans-serif;"><!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <title>Admin Dashboard</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='styleadmin.css') }}">
-      <!-- Font Awesome Cdn Link -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
-    </head>
-    <body>
-      <div class="container">
-        <nav>
-          <ul>
-            <li><a href="#" class="logo">
-              <img src="{{ url_for('static', filename='images/adminlogo.png') }}">
-              <span class="nav-item">Admin</span>
-            </a></li>
-            <li><a href="#">
-              <i class="fas fa-menorah"></i>
-              <span class="nav-item">Dashboard</span>
-            </a></li>
-            <li><a href="#">
-              <i class="fas fa-comment"></i>
-              <span class="nav-item">Messages</span>
-            </a></li>
-            <li><a href="#">
-              <i class="fas fa-database"></i>
-              <span class="nav-item">Analytics</span>
-            </a></li>
-            <li><a href="#">
-              <i class="fas fa-chart-bar"></i>
-              <span class="nav-item">Users</span>
-            </a></li>
-            <li><a href="#">
-              <i class="fas fa-cog"></i>
-              <span class="nav-item">Settings</span>
-            </a></li>
-            <li><a id="logout" class="logout" href="/logout">
-              <i class="fas fa-sign-out-alt"></i>
-              <span class="nav-item">Log out</span>
-            </a></li>
-          </ul>
-        </nav>
-    
-    
-        <section class="main">
-          <div class="main-top">
-            <h1>Users</h1>
-            <i class="fas fa-user-cog"></i>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleadminv2.css') }}" />
+    <title>Admin Dashboard V2 Genesis</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
+            <h2>GENESIS</h2>
           </div>
-          <div class="users">
-            <div class="card">
-              <img src="{{ url_for('static', filename='images/profile1.jpg') }}">
-              <h4>Allen Takahashi</h4>
-              <p>Newly Registered</p>
-              <div class="per">
-                
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <a href="#">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="/users">
+            <!-- This is the link to the users.html, make a screen that makes the user list better to look at -->
+            <span class="material-icons-sharp">person_outline</span>
+            <h3>Users</h3> <!-- Button to see full list of registered users -->
+          </a>
+          <a href="#" class="active">
+            <span class="material-icons-sharp">insights</span>
+            <h3>Analytics</h3>
+          </a>
+
+          <a href="#">
+            <span class="material-icons-sharp">report_gmailerrorred</span>
+            <h3>Reports</h3> <!-- Maybe this is where the reports of the ML Model is gonna be -->
+          </a>
+        
+          <a id="logout" class="logout" href="/logout">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+      <!-- End of Sidebar Section -->
+
+      <!-- Main Content -->
+      <main>
+        <h1>Analytics</h1>
+        <!-- Analysis -->
+        <div class="analyse">
+          <div class="sales">
+            <div class="status">
+              <div class="info">
+                <h3>Total Users </h3> 
+                <h1>{{ total_users}}</h1>
               </div>
-              <button>Profile</button>
-            </div>
-            <div class="card">
-              <img src="{{ url_for('static', filename='images/profile2.jpg') }}">
-              <h4>Michael Jackson</h4>
-              <p>Newly Registered</p>
-              <div class="per">
-                
+              <div class="progresss">
+                <svg>
+                  <circle cx="38" cy="38" r="36"></circle>
+                </svg>
               </div>
-              <button>Profile</button>
-            </div>
-            <div class="card">
-              <img src="{{ url_for('static', filename='images/profile3.png') }}">
-              <h4>Hee Hee</h4>
-              <p>Newly Registered</p>
-              <div class="per">
-               
-              </div>
-              <button>Profile</button>
-            </div>
-            <div class="card">
-              <img src="{{ url_for('static', filename='images/mcquen1.jpg') }}">
-              <h4>Lightning McQueen</h4>
-              <p>Newly Registered</p>
-              <div class="per">
-                
-              </div>
-              <button>Profile</button>
             </div>
           </div>
-    
-          <section class="attendance">
-            <div class="attendance-list">
-              <h1>User List</h1>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Registration Date</th>
-                    <th>User Priority</th>
-                    <th>Last Activity</th>
-                    <th>Details</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for user in users %}
-                  <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.registration_date }}</td>
-                    <td>{{ user.user_priority }}</td>
-                    <td>{{ user.last_activity }}</td>
-                    <td><button>View</button></td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+          <div class="visits">
+            <div class="status">
+              <div class="info">
+                <h3>Site Visit</h3>
+                <!-- <h1>10</h1> Not sure how to implement yet -->
+              </div>
+              <div class="progresss">
+                <svg>
+                  <circle cx="38" cy="38" r="36"></circle>
+                </svg>
+              </div>
             </div>
-          </section>
-        </section>
+          </div>
+          <div class="searches">
+            <div class="status">
+              <div class="info">
+                <h3>Searches</h3>
+                <!-- <h1>69</h1> Not sure how to implement yet -->
+              </div>
+              <div class="progresss">
+                <svg>
+                  <circle cx="38" cy="38" r="36"></circle>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End of Analysis -->
+        <!-- New Users Section -->
+        <div class="new-users">
+          <h2>New Users</h2>
+          <div class="user-list">
+            {% for user in new_users %}
+              <div class="user">
+                <!-- Adjust image source as needed -->
+                <img src="{{ url_for('static', filename='images/placeholderpicture.jpg') }}" />
+                <h2>{{ user.username }}</h2>
+                <!-- Use date_created or any other appropriate attribute -->
+                <p>{{ user.date_created }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- End of New Users Section -->
+
+        <!-- Recent Logins Table -->
+        <div class="recent-logins">
+          <h2>Recent Logins</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for login_event in recent_login_events %}
+                <tr>
+                  <td>{{ login_event.email }}</td>
+                  <td>{{ login_event.username }}</td>
+                  <td>{{ login_event.status }}</td>
+                  <td>{{ login_event.timestamp }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <a href="#">Show All</a>
+        </div>
+        <!-- End of Recent Logins -->
+      </main>
+      <!-- End of Main Content -->
+
+      <!-- Right Section -->
+      <div class="right-section">
+        <div class="nav">
+          <button id="menu-btn"><span class="material-icons-sharp">menu</span></button>
+          <div class="dark-mode">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+          </div>
+
+          <div class="profile">
+            <div class="info">
+              <p>
+                Hey, <b>Allen</b>
+              </p>
+              <small class="text-muted">Admin</small>
+            </div>
+            <div class="profile-photo">
+              <img src="{{ url_for('static', filename='images/adminv2.png') }}" />
+            </div>
+          </div>
+        </div>
+        <!-- End of Nav -->
+
+        <div class="user-profile">
+          <div class="logo">
+            <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
+            <h2>Genesis</h2>
+          </div>
+        </div>
+
+        <div class="reminders">
+          <div class="header">
+            <h2>Reminders</h2>
+            <span class="material-icons-sharp">notifications_none</span>
+          </div>
+
+          <div class="notification">
+            <div class="icon">
+              <span class="material-icons-sharp">volume_up</span>
+            </div>
+            <div class="content">
+              <div class="info">
+                <h3>Finish ML Model</h3>
+                <small class="text_muted">All Day</small>
+              </div>
+              <span class="material-icons-sharp">more_vert</span>
+            </div>
+          </div>
+
+          <div class="notification deactive">
+            <div class="icon">
+              <span class="material-icons-sharp">edit</span>
+            </div>
+            <div class="content">
+              <div class="info">
+                <h3>Cry</h3>
+                <small class="text_muted">08:00 AM - 12:00 PM</small>
+              </div>
+              <span class="material-icons-sharp">more_vert</span>
+            </div>
+          </div>
+
+          <div class="notification add-reminder">
+            <div>
+              <span class="material-icons-sharp">add</span>
+              <h3>Add Reminder</h3>
+            </div>
+          </div>
+        </div>
       </div>
-    
-    </body>
-    </html>
-    </span>
+    </div>
+
+    <script src="orders.js"></script>
+    <script src="{{ url_for('static', filename='adminv2.js') }}"></script>
+  </body>
+</html>
