@@ -2,13 +2,16 @@ from flask import Blueprint, current_app, render_template, request, redirect, ur
 from .models import User, LoginEvent
 from .forms import SignUpForm, LoginForm
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db, mail
+from . import db, mail, auth
 from flask_login import login_user, login_required, logout_user, current_user
 import requests
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Message, Mail
 from datetime import datetime
+import re
+import dns.resolver
 
+EMAIL_REGEX = r'^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$'
 
 
 auth = Blueprint('auth', __name__)
@@ -29,14 +32,13 @@ GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
 GITHUB_TOKEN_URL = 'https://github.com/login/oauth/access_token'
 GITHUB_SCOPE = 'user:email'
 
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        if current_user.is_admin:  # Check if the user is an admin
-            return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
+        if current_user.is_admin:  
+            return redirect(url_for('views.admindash'))  
         else:
-            return redirect(url_for('views.userdash'))  # Redirect to user dashboard
+            return redirect(url_for('views.userdash'))  
 
     signup_form = SignUpForm()
     login_form = LoginForm()
@@ -49,54 +51,72 @@ def login():
             username = signup_form.username.data
             password = signup_form.password.data
 
+            if not is_valid_email(email):
+                flash('Invalid email domain. Please use a valid email address.', 'error')
+                return redirect(url_for('auth.login'))
+
             user = User.query.filter_by(email=email).first()
-            if not user:
-                new_user = User(email=email, username=username,
-                                password=generate_password_hash(password, method='pbkdf2:sha256'))
-                db.session.add(new_user)
-                db.session.commit()
-                flash('Account created successfully! You can now sign in.', 'success') # need pop up message
-            else:
-                flash('Email already exists. Please sign in.', 'error') # need pop up message
+            if user:
+                flash('This email already has an account. Please use a different email.', 'error')
+                return redirect(url_for('auth.login'))
+
+            new_user = User(
+                email=email,
+                username=username,
+                password=generate_password_hash(password, method='pbkdf2:sha256')
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Account created successfully! You can now sign in.', 'success')
         elif form_type == 'login' and login_form.validate_on_submit():
             # Login logic
             email = login_form.email.data
             password = login_form.password.data
 
             user = User.query.filter_by(email=email).first()
-            if user and check_password_hash(user.password, password):
+            if user and user.password is not None and check_password_hash(user.password, password):
                 login_user(user, remember=True)
-                flash('Logged in successfully!', 'success') # need pop up message
-                
+                flash('Logged in successfully!', 'success')
+
                 timestamp = datetime.now()
-                
-                #Login Event
+
+                # Login Event
                 login_event = LoginEvent(
                     email=user.email,
                     username=user.username,
                     timestamp=timestamp,
-                    status ='online'
-                    
+                    status='online'
                 )
                 db.session.add(login_event)
                 db.session.commit()
-                
-                if user.username == 'admin':
-                    user.is_admin = True
-                else: 
-                    user.is_admin = False
+
+                user.is_admin = (user.username == 'admin')
                 db.session.commit()
-                
-                if user.is_admin:  # Check if the user is an admin
-                    return redirect(url_for('views.admindash'))  # Redirect to admin dashboard
+
+                if user.is_admin:  
+                    return redirect(url_for('views.admindash'))  
                 else:
-                    return redirect(url_for('views.userdash'))  # Redirect to user dashboard
+                    return redirect(url_for('views.userdash'))  
             else:
-                flash('Invalid email or password.', 'error') # need pop up message
-                
-            
+                flash('Invalid email or password.', 'error')
 
     return render_template("signuplogin.html", signup_form=signup_form, login_form=login_form)
+
+
+def is_valid_email(email):
+    allowed_domains = [
+        'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'aol.com',
+        'icloud.com', 'live.com', 'msn.com', 'protonmail.com', 'zoho.com'
+        # Add more popular domains as needed
+    ]
+
+    domain = email.split('@')[-1]
+
+    if domain in allowed_domains:
+        return True
+    else:
+        return False
+
 
 @auth.route('/google-login')
 def google_login():
@@ -114,22 +134,43 @@ def google_authorized():
         'grant_type': 'authorization_code'
     }
     response = requests.post(GOOGLE_TOKEN_URL, data=data)
-    access_token = response.json().get('access_token')
-    # Use the access token to fetch user profile information from Google
+    response_data = response.json()
+
+    # Check if access token is present in the response
+    access_token = response_data.get('access_token')
+    if not access_token:
+        flash('Failed to retrieve access token from Google. Please try again.', 'error')
+        return redirect(url_for('auth.login'))
+
+    # Fetch user profile information from Google using the access token
     profile_info = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', params={'access_token': access_token}).json()
     email = profile_info.get('email')
 
+    if not email:
+        flash('Failed to retrieve email from Google. Please try again.', 'error')
+        return redirect(url_for('auth.login'))
+
     # Check if the user exists in your database
     user = User.query.filter_by(email=email).first()
-    if not user:
+    if user:
+        # If the user exists, log them in
+        login_user(user, remember=True)
+        flash('Logged in successfully via Google!', 'success')
+    else:
         # If the user does not exist, create a new user
-        user = User(email=email)
+        username = email.split('@')[0]  # Use the part of the email before '@' as the default username
+        user = User(email=email, username=username, password=None)  # Set password to None or a default value if required
         db.session.add(user)
         db.session.commit()
+        login_user(user, remember=True)
+        flash('Account created and logged in successfully via Google!', 'success')
+    
+    login_event = LoginEvent(email=email, username=user.username, timestamp=datetime.utcnow())
+    db.session.add(login_event)
+    db.session.commit()
 
-    login_user(user, remember=True)
-    flash('Logged in successfully via Google!', 'success') 
     return redirect(url_for('views.userdash'))
+
 
 @auth.route('/github-login')
 def github_login():
@@ -144,25 +185,49 @@ def github_authorized():
         'client_secret': GITHUB_CLIENT_SECRET,
         'code': code,
         'redirect_uri': GITHUB_REDIRECT_URI
+
     }
     response = requests.post(GITHUB_TOKEN_URL, data=data, headers={'Accept': 'application/json'})
-    access_token = response.json().get('access_token')
-    # Use the access token to fetch user profile information from GitHub
+    response_data = response.json()
+
+    # Check if access token is present in the response
+    access_token = response_data.get('access_token')
+    if not access_token:
+        flash('Failed to retrieve access token from GitHub. Please try again.', 'error')
+        return redirect(url_for('auth.login'))
+
+    # Fetch user profile information from GitHub using the access token
     headers = {'Authorization': f'token {access_token}'}
     profile_info = requests.get('https://api.github.com/user', headers=headers).json()
     email = profile_info.get('email')
+
+    if not email:
+        flash('GitHub did not provide your email address. Please grant access to your email when logging in.', 'error')
+        return redirect(url_for('auth.login'))
+
+    # Check if the email domain is valid
+    if not is_valid_email(email):
+        flash('Invalid email domain. Please use a valid email address.', 'error')
+        return redirect(url_for('auth.login'))
 
     # Check if the user exists in your database
     user = User.query.filter_by(email=email).first()
     if not user:
         # If the user does not exist, create a new user
-        user = User(email=email)
+        username = email.split('@')[0]  # Use the part of the email before '@' as the default username
+        user = User(email=email, username=username, password=None)  # Set password to None or a default value if required
         db.session.add(user)
         db.session.commit()
 
     login_user(user, remember=True)
     flash('Logged in successfully via GitHub!', 'success') 
+    
+    login_event = LoginEvent(email=email, username=user.username, timestamp=datetime.utcnow())
+    db.session.add(login_event)
+    db.session.commit()
+    
     return redirect(url_for('views.userdash'))
+
 
 def get_serializer():
     return URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -212,9 +277,6 @@ def reset_password(token):
         db.session.commit()
         return redirect(url_for('auth.login'))
     return render_template('reset_password.html', token=token)
-
-
-
 
 @auth.route('/logout')
 @login_required

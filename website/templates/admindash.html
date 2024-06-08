@@ -23,15 +23,6 @@
         </div>
 
         <div class="sidebar">
-          <a href="#">
-            <span class="material-icons-sharp">dashboard</span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="/users">
-            <!-- This is the link to the users.html, make a screen that makes the user list better to look at -->
-            <span class="material-icons-sharp">person_outline</span>
-            <h3>Users</h3> <!-- Button to see full list of registered users -->
-          </a>
           <a href="#" class="active">
             <span class="material-icons-sharp">insights</span>
             <h3>Analytics</h3>
@@ -121,7 +112,6 @@
               <tr>
                 <th>Email</th>
                 <th>Username</th>
-                <th>Status</th>
                 <th>Timestamp</th>
               </tr>
             </thead>
@@ -130,7 +120,6 @@
                 <tr>
                   <td>{{ login_event.email }}</td>
                   <td>{{ login_event.username }}</td>
-                  <td>{{ login_event.status }}</td>
                   <td>{{ login_event.timestamp }}</td>
                 </tr>
               {% endfor %}
