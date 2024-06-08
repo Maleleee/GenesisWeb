@@ -15,6 +15,8 @@
             margin: 0;
         }
         .container {
+            position: relative;
+            z-index: 2;
             background-color: #fff;
             padding: 20px 40px;
             border-radius: 8px;
@@ -48,18 +50,86 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+        /* Simple modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fefefe;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content {
+            margin-bottom: 20px;
+        }
+        .modal button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .modal button:last-child {
+            margin-right: 0;
+        }
+        .modal button:hover {
+            background-color: #45a049;
+        }
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            z-index: 2; /* Updated z-index */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <div class="overlay" id="overlay"></div>
+
     <div class="container">
         <h2>Deposit</h2>
-        <form method="post" action="{{ url_for('views.deposit') }}">
+        <form id="depositForm" method="post" action="{{ url_for('views.deposit') }}">
             <label for="amount">Amount:</label>
             <input type="number" id="amount" name="amount" min="1" required><br><br>
-            <input type="submit" value="Deposit">
+            <input type="button" value="Deposit" onclick="openModal()">
         </form>
     </div>
+
+    <!-- Simple modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <p>Are you sure you want to deposit?</p>
+            <button onclick="closeModal()">Cancel</button>
+            <button onclick="confirmDeposit()">Deposit</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("depositModal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("depositModal").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        function confirmDeposit() {
+            document.getElementById("depositForm").submit();
+        }
+    </script>
 </body>
 </html>
-
-
