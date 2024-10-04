@@ -1,0 +1,10 @@
+
+
+
+TO TEST IF THE ACTIVITY LOGGING LOCALLY WORKS, do the ff:
+
+- Run the website 
+
+- Perform any actions on the user dashboard, deposit, withdraw, etc..
+
+- Check the logs using localhost:5000/activity_logs

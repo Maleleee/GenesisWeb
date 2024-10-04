@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 
+
 db = SQLAlchemy()
 
 DB_NAME = "database.db"
@@ -32,7 +33,12 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
 
     with app.app_context():
-        db.create_all()
+       db.create_all()
+       print("Database created and initialized")
+       
+       #db.drop_all()
+       #print("Database dropped.")
+        
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'

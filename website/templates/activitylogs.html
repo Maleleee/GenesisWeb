@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs</title>
+</head>
+<body>
+    <h1>User Activity Logs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Method</th>
+                <th>Amount</th>
+                <th>Request Rate</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity in activities %}
+            <tr>
+                <td>{{ activity.endpoint }}</td>
+                <td>{{ activity.method }}</td>
+                <td>{{ activity.packet_size }}</td>
+                <td>{{ activity.request_rate }}</td>
+                <td>{{ activity.timestamp }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No activity logs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
