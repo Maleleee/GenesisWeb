@@ -1,2 +1,2 @@
 
-app.run(debug=True)
+@app.route('/predict')

@@ -1,10 +1,9 @@
 # __init__.py
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail
-
-
+from website.restAPI import api_bp
 
 db = SQLAlchemy()
 
@@ -13,6 +12,7 @@ mail = Mail()
 
 def create_app():
     app = Flask(__name__)
+    app.register_blueprint(api_bp)
     app.config['SECRET_KEY'] = 'for testing'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app)
@@ -50,3 +50,4 @@ def create_app():
         return User.query.get(int(id))
 
     return app
+

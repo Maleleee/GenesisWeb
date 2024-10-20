@@ -13,14 +13,11 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense, Dropout
 from keras.utils import to_categorical
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import classification_report, confusion_matrix
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Define your base directories
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the directory of this file
 DATA_FILE = os.path.join(BASE_DIR, 'network_traffic_data.csv')  # Path to the CSV file
-CATEGORIES = ['normal', 'DDOS', 'port_scan', 'syn_flood', 'icmp_flood']
+CATEGORIES = ['normal', 'DDOS', 'port_scan'] # Categories from dataset.
 
 # Initialize label encoder
 label_encoder = LabelEncoder()
@@ -66,20 +63,23 @@ class UserActivity(db.Model):
     
 #### MACHINE LEARNING MODEL SECTION ####
 
-# Load and preprocess training data for the machine learning model
+# Load and preprocess data for training
 def load_and_preprocess_data():
-    data = pd.read_csv(DATA_FILE)  # Load the entire dataset
-    features = data[['packet_size', 'request_rate']]  # Relevant features
-    labels = data['label'].values  # Ensure your CSV has a 'label' column
-
-    y = label_encoder.transform(labels)
+    data = pd.read_csv(DATA_FILE)
+    features = data[['packet_size', 'request_rate']]
+    labels = data['label'].values
+    
+    # Initialize encoder and scaler
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(labels)
     y_one_hot = to_categorical(y, num_classes=len(CATEGORIES))
+    
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(features)
-    X_scaled = np.reshape(X_scaled, (X_scaled.shape[0], 1, X_scaled.shape[1]))  # For LSTM input
+    X_scaled = np.reshape(X_scaled, (X_scaled.shape[0], 1, X_scaled.shape[1]))  # For LSTM
     return X_scaled, y_one_hot, scaler
 
-# Define the LSTM machine learning model
+# Create LSTM model
 def create_model(input_shape, num_classes):
     model = Sequential([
         LSTM(64, input_shape=input_shape, return_sequences=True),
@@ -90,23 +90,3 @@ def create_model(input_shape, num_classes):
     ])
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
-
-# Predict based on input data
-def make_prediction(input_data):
-    # Load and preprocess the input data
-    X_train, y_train, scaler = load_and_preprocess_data()
-
-    # Create and train the model
-    model = create_model((X_train.shape[1], X_train.shape[2]), len(CATEGORIES))
-    model.fit(X_train, y_train, epochs=50, validation_split=0.3)
-
-    # Use the scaler to transform the input data
-    input_scaled = scaler.transform(input_data[['packet_size', 'request_rate']])
-    input_scaled = np.reshape(input_scaled, (input_scaled.shape[0], 1, input_scaled.shape[1]))
-
-    # Predict the class of the input data
-    predictions = model.predict(input_scaled)
-    predicted_class = np.argmax(predictions, axis=1)
-    predicted_label = label_encoder.inverse_transform(predicted_class)[0]
-
-    return predicted_label

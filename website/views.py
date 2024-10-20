@@ -1,14 +1,15 @@
 from flask import Blueprint, render_template, url_for, redirect, request, session, jsonify
 from flask_login import login_required, current_user
 from . import db
-from .models import User, Transaction, UserActivity, LoginEvent, make_prediction
+from .models import User, Transaction, UserActivity, LoginEvent
+from .mlmodel import make_prediction
 import os
 from datetime import datetime
 import numpy as np
 import logging
+import time
 
 logger = logging.getLogger(__name__)
-
 
 views = Blueprint('views', __name__)
 
@@ -140,26 +141,54 @@ def capture_user_activity():
     if current_user.is_authenticated:
         user_id = current_user.id
 
-        # Simulate packet size and request rate (can be enhanced with real data)
+        # Simulate packet size
         packet_size = len(request.data) if request.data else 100
+
+        # Get last request time from the session
         last_request_time = session.get('last_request', time.time())
-        request_rate = 1 / (time.time() - last_request_time) if last_request_time else 0
-        session['last_request'] = time.time()
+        
+        # Calculate request rate: avoid division by zero
+        current_time = time.time()
+        elapsed_time = current_time - last_request_time
+
+        # Check if elapsed_time is greater than 0 to avoid division by zero
+        if elapsed_time > 0:
+            request_rate = 1 / elapsed_time
+        else:
+            request_rate = 0.0  # Prevent division by zero
+        
+        # Update last request time in the session
+        session['last_request'] = current_time
 
         # Log user activity
-        log_user_activity(user_id=user_id, endpoint=request.endpoint, method=request.method, packet_size=packet_size, request_rate=request_rate)
+        log_user_activity(
+            user_id=user_id,
+            endpoint=request.endpoint,
+            method=request.method,
+            packet_size=packet_size,
+            request_rate=request_rate  # Ensure request_rate is being logged
+        )
 
         # Prepare data for prediction
-        user_data = np.array([[packet_size, request_rate]])
-        
-        # Make prediction using the ML model
-        predicted_label = make_prediction(user_data)
+        user_data = np.array([[packet_size, request_rate]])  # Reshape if necessary
 
-        return jsonify({
-            'user_id': user_id,
-            'packet_size': packet_size,
-            'request_rate': request_rate,
-            'predicted_label': predicted_label
-        })
+        try:
+            # Make prediction using the ML model
+            predicted_labels = make_prediction(user_data)  # Make sure this returns a list of labels
+
+            if predicted_labels:  # Check if valid predictions were made
+                return jsonify({
+                    'user_id': user_id,
+                    'packet_size': int(packet_size),  
+                    'request_rate': float(request_rate),  
+                    'predicted_labels': predicted_labels  
+                })
+            else:
+                return jsonify({'status': 'failed', 'message': 'No valid prediction'}), 400
+
+        except Exception as e:
+            # Log the error for debugging purposes
+            logger.error(f"Error in make_prediction: {e}")
+            return jsonify({'status': 'error', 'message': str(e)}), 500
         
     return jsonify({'status': 'failed', 'message': 'User not logged in'})
