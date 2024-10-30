@@ -1,118 +1,65 @@
-
 let sidebarOpen = false;
-const sidebar = document.getElementById('sidebar');
+const sidebar = document.querySelector('.sidebar'); // Use class if no ID is available
 
+// Function to open the sidebar
 function openSidebar() {
   if (!sidebarOpen) {
-    sidebar.classList.add('sidebar-responsive');
+    sidebar.classList.add('sidebar-responsive'); // Add responsive class
     sidebarOpen = true;
   }
 }
 
+// Function to close the sidebar
 function closeSidebar() {
   if (sidebarOpen) {
-    sidebar.classList.remove('sidebar-responsive');
+    sidebar.classList.remove('sidebar-responsive'); // Remove responsive class
     sidebarOpen = false;
   }
 }
 
+// Function to close Withdraw modal
+function closeWithdraw() {
+  document.getElementById("withdrawModal").style.display = "none";
+}
 
-// BAR CHART
-const barChartOptions = {
-  series: [
-    {
-      data: [10, 8, 6, 4, 2],
-    },
-  ],
-  chart: {
-    type: 'bar',
-    height: 350,
-    toolbar: {
-      show: false,
-    },
-  },
-  colors: ['#246dec', '#cc3c43', '#367952', '#f5b74f', '#4f35a1'],
-  plotOptions: {
-    bar: {
-      distributed: true,
-      borderRadius: 4,
-      horizontal: false,
-      columnWidth: '40%',
-    },
-  },
-  dataLabels: {
-    enabled: false,
-  },
-  legend: {
-    show: false,
-  },
-  xaxis: {
-    categories: ['Laptop', 'Phone', 'Monitor', 'Headphones', 'Camera'],
-  },
-  yaxis: {
-    title: {
-      text: 'Count',
-    },
-  },
-};
+// Function to close Deposit modal
+function closeDeposit() {
+  document.getElementById("depositModal").style.display = "none";
+}
 
-const barChart = new ApexCharts(
-  document.querySelector('#bar-chart'),
-  barChartOptions
-);
-barChart.render();
+// Function to close Transactions modal
+function closeTransactions() {
+  document.getElementById("transactionsModal").style.display = "none";
+}
 
-// AREA CHART
-const areaChartOptions = {
-  series: [
-    {
-      name: 'Purchase Orders',
-      data: [31, 40, 28, 51, 42, 109, 100],
-    },
-    {
-      name: 'Sales Orders',
-      data: [11, 32, 45, 32, 34, 52, 41],
-    },
-  ],
-  chart: {
-    height: 350,
-    type: 'area',
-    toolbar: {
-      show: false,
-    },
-  },
-  colors: ['#4f35a1', '#246dec'],
-  dataLabels: {
-    enabled: false,
-  },
-  stroke: {
-    curve: 'smooth',
-  },
-  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-  markers: {
-    size: 0,
-  },
-  yaxis: [
-    {
-      title: {
-        text: 'Purchase Orders',
-      },
-    },
-    {
-      opposite: true,
-      title: {
-        text: 'Sales Orders',
-      },
-    },
-  ],
-  tooltip: {
-    shared: true,
-    intersect: false,
-  },
-};
+// Function to open Withdraw modal
+function openWithdraw() {
+  document.getElementById("withdrawModal").style.display = "flex";
+}
 
-const areaChart = new ApexCharts(
-  document.querySelector('#area-chart'),
-  areaChartOptions
-);
-areaChart.render();
+// Function to open Deposit modal
+function openDeposit() {
+  document.getElementById("depositModal").style.display = "flex";
+}
+
+// Function to open Transactions modal
+function openTransactions() {
+  document.getElementById("transactionsModal").style.display = "flex";
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+  const withdrawModal = document.getElementById("withdrawModal");
+  const depositModal = document.getElementById("depositModal");
+  const transactionsModal = document.getElementById("transactionsModal");
+  
+  if (event.target === withdrawModal) {
+      closeWithdraw();
+  }
+  if (event.target === depositModal) {
+      closeDeposit();
+  }
+  if (event.target === transactionsModal) {
+      closeTransactions();
+  }
+}

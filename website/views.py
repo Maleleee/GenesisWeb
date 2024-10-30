@@ -94,46 +94,47 @@ def activity_logs():
         return render_template("error.html", error=str(e))  # Handle error gracefully
 
 
-# Withdraw Page
-@views.route('/withdraw', methods=['GET'])
-@login_required
-def show_withdraw_form():
-    return render_template('withdraw_form.html')
-
+# Withdraw Route (POST)
 @views.route('/withdraw', methods=['POST'])
 @login_required
 def withdraw():
-    amount = float(request.form.get('amount'))
-    if current_user.balance < amount:
-        return render_template('withdraw_form.html')
-    else:
-        current_user.balance -= amount
-        transaction = Transaction(user_id=current_user.id, transaction_type=False, amount=amount, status=True)
-        db.session.add(transaction)
-        db.session.commit()
-        
-        log_user_activity(current_user.id, 'withdraw', 'POST', packet_size=int(amount))
-    return redirect(url_for('views.userdash'))
+    try:
+        amount = float(request.form.get('amount'))
+        if current_user.balance < amount:
+            return redirect(url_for('views.userdash'))  # Optionally handle insufficient balance case
+        else:
+            current_user.balance -= amount
+            transaction = Transaction(user_id=current_user.id, transaction_type=False, amount=amount, status=True)
+            db.session.add(transaction)
+            db.session.commit()
 
-# Deposit Form
-@views.route('/deposit', methods=['GET'])
-@login_required
-def show_deposit_form():
-    return render_template('deposit_form.html')
+            # Log user activity
+            log_user_activity(user_id=current_user.id, endpoint='withdraw', method='POST', packet_size=int(amount))
 
+            return redirect(url_for('views.userdash'))
+    except Exception as e:
+        logger.error(f"Error in withdraw operation: {e}")
+        return redirect(url_for('views.userdash'))  # Handle error case
+
+# Deposit Route (POST)
 @views.route('/deposit', methods=['POST'])
 @login_required
 def deposit():
-    amount = float(request.form.get('amount'))
-    current_user.balance += amount
-    transaction = Transaction(user_id=current_user.id, transaction_type=True, amount=amount, status=True)
-    db.session.add(transaction)
-    db.session.commit()
+    try:
+        amount = float(request.form.get('amount'))
+        current_user.balance += amount
+        transaction = Transaction(user_id=current_user.id, transaction_type=True, amount=amount, status=True)
+        db.session.add(transaction)
+        db.session.commit()
 
-    # Log user activity
-    log_user_activity(current_user.id, 'deposit', 'POST', packet_size=int(amount))
-    
-    return redirect(url_for('views.userdash'))
+        # Log user activity
+        log_user_activity(user_id=current_user.id, endpoint='deposit', method='POST', packet_size=int(amount))
+
+        return redirect(url_for('views.userdash'))
+    except Exception as e:
+        logger.error(f"Error in deposit operation: {e}")
+        return redirect(url_for('views.userdash'))  # Handle error case
+
 
 # MACHINE LEARNING MODEL SECTION
 @views.route('/user-activity', methods=['GET'])

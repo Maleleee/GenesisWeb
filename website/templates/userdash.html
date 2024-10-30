@@ -18,18 +18,6 @@
                 </a>
             </li>
             <li>
-                <a href="{{ url_for('views.show_withdraw_form') }}">                    
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>Withdraw</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('views.show_deposit_form') }}">
-                    <i class="fas fa-piggy-bank"></i>
-                    <span>Deposit</span>
-                </a>
-            </li>
-            <li>
                 <a href="#">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
@@ -47,84 +35,100 @@
     <div class="main--content">
         <div class="header--wrapper">
             <div class="header--title">
-                <span>User</span>
-                <h2>Dashboard</h2>
-            </div>
-            <div class="user--info">
-                <div class="search--box">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" placeholder="Search" />
-                </div>
-                <img src="{{ url_for('static', filename='images/placeholderpicture.jpg') }}">
+                <span>Genesis</span>
+                <h2>User Dashboard</h2>
             </div>
         </div>
+
+        <div class="account-balance">
+            <h3 class="main--title">Account Balance</h3>
+            <div class="balance-display">
+                <span class="balance-value">₱{{ balance }}</span>
+            </div>
+        </div>
+
         <div class="card--container">
-            <h3 class="main--title">Today's Data</h3>
-            <div class="card--wrapper">
-                <div class="payment--card light-red">
-                    <div class="card--header">
-                        <div class="amount">
-                            <span class="title">Account Balance</span>
-                            <span class="amount--value">{{ balance }}</span>
-                        </div>
-                        <i class="fas fa-dollar-sign icon"></i>
+            <h3 class="main--title">Services</h3>
+            <div class="big-card">
+                <div class="card--wrapper">
+                    <div class="service--card light-blue" onclick="openWithdraw()">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Withdraw</span>
                     </div>
-                    <span class="card-detail">**** **** **** 6920</span>
-                </div>
-                <div class="payment--card light-purple">
-                    <div class="card--header">
-                        <div class="amount">
-                            <span class="title">Recent Withdrawal </span>
-                            <h2>{{ recent_withdrawal.amount }}</h2>
-                        </div>
-                        <i class="fas fa-money-bill-wave icon dark-purple"></i>
+                    <div class="service--card light-blue" onclick="openDeposit()">
+                        <i class="fas fa-university"></i>
+                        <span>Deposit</span>
                     </div>
-                </div>
-                <div class="payment--card light-green">
-                    <div class="card--header">
-                        <div class="amount">
-                            <span class="title">Recent Deposit</span>
-                            <h2>{{ recent_deposit.amount }}</h2>
-                        </div>
-                        <i class="fas fa-piggy-bank icon dark-green"></i>
-                    </div>
-                </div>
-                <div class="payment--card light-blue">
-                    <div class="card--header">
-                        <div class="amount">
-                            <span class="title">Credit Score</span>
-                            <span class="amount--value">Excellent!</span>
-                        </div>
-                        <i class="fa-solid fa-check icon dark-blue"></i>
+                  
+                    <!-- Changed 'Load' to 'Transactions' -->
+                    <div class="service--card light-blue" onclick="openTransactions()">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Transactions</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="tabular--wrapper">
-            <h3 class="main--title">Finance Data</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
+
+ <!-- Modal For Withdraw -->
+<div id="withdrawModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeWithdraw()">&times;</span>
+        <h3 class="main--title">Withdraw</h3>
+        <form method="POST" action="/withdraw">
+            <label for="amount">Amount:</label>
+            <input type="number" id="withdrawAmount" name="amount" placeholder="Enter amount" required>
+            <button type="submit" class="btn">Withdraw</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Deposit -->
+<div id="depositModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeposit()">&times;</span>
+        <h3 class="main--title">Deposit</h3>
+        <form method="POST" action="/deposit">
+            <label for="amount">Amount:</label>
+            <input type="number" id="depositAmount" name="amount" placeholder="Enter amount" required>
+            <button type="submit" class="btn">Deposit</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Transactions -->
+<div id="transactionsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeTransactions()">&times;</span>
+        <h3 class="main--title">Finance Data</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transaction Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
                         <tr>
-                            <th>Date</th>
-                            <th>Transaction Type</th>
-                            <th>Amount</th>
-                            <th>Status</th>
+                            <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ 'Deposit' if transaction.transaction_type == 1 else 'Withdraw' }}</td>
+                            <td>₱{{ transaction.amount }}</td>
+                            <td>{{ 'Success' if transaction.status == 1 else 'Failed' }}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for transaction in transactions %}
-                            <tr>
-                                <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
-                                <td>{{ 'Deposit' if transaction.transaction_type else 'Withdraw' }}</td>
-                                <td>{{ transaction.amount }}</td>
-                                <td>{{ 'Success' if transaction.status else 'Failed' }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+
+
+
+
+
+    <script src="{{ url_for('static', filename='userfunctions.js') }}"></script>
 </body>
 </html>

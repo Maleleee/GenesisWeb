@@ -15,311 +15,264 @@ html, body {
 
 body {
     display: flex;
+    background-color: #0d1b2a; /* Dark blue background */
+    color: #fff; /* White text */
 }
 
 .sidebar {
-    position: sticky; /* Ensuring sticky position */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 115px;
-    height: 100vh; /* Full height */
-    padding: 0 1.7rem;
+    width: 80px; /* Small initial width */
+    height: 100vh;
+    background: #0a1733; /* Darker blue */
     color: #fff;
     overflow: hidden;
-    transition: all 0.5s linear;
-    background: rgba(113, 99, 186, 255);
+    transition: width 0.3s ease-in-out; /* Smooth transition when hovering */
 }
 
 .sidebar:hover {
-    width: 240px;
-    transition: 0.5s;
+    width: 240px; /* Expand sidebar on hover */
 }
 
-.logo {
-    height: 80px;
-    padding: 16px;
-}
-
-.menu {
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 80px - 50px); /* Adjust height considering logo and logout */
-    position: relative;
+.sidebar .menu {
     list-style: none;
     padding: 0;
-    overflow-y: auto; /* Add scroll if content overflows */
 }
 
-.menu li {
-    padding: 1rem;
+.sidebar .menu li {
+    padding: 1.2rem;
     margin: 8px 0;
     border-radius: 8px;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    opacity: 0; /* Hidden by default */
 }
 
-.menu li:hover,
-.active {
-    background: #e0e0e058;
+.sidebar:hover .menu li {
+    opacity: 1; /* Show text on hover */
+    transition-delay: 0.2s; /* Slight delay for smooth appearance */
 }
 
-.menu a {
+.sidebar .menu a {
     color: #fff;
-    font-size: 14px;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-}
-
-.menu a span {
-    overflow: hidden;
-}
-
-.menu a i {
-    font-size: 1.2rem;
-}
-
-.logout {
-    margin-top: auto; /* Ensure logout is at the bottom */
-    padding: 1rem;
-    border-radius: 8px;
-    transition: all 0.5s ease-in-out;
-}
-
-.logout a {
-    color: #fff;
+    gap: 1rem;
     font-size: 14px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+    white-space: nowrap;
+    opacity: 0; /* Hide links by default */
 }
 
+.sidebar:hover .menu a {
+    opacity: 1; /* Show links on hover */
+    transition: opacity 0.3s ease-in-out;
+}
 
-/* Main Content */
+.sidebar i {
+    font-size: 1.5rem;
+    opacity: 1; /* Icons are always visible */
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar:hover i {
+    transition-delay: 0.1s;
+}
+
 .main--content {
-    background: #ebe9e9;
-    flex-grow: 1; /* Ensure it takes the remaining space */
+    margin-left: 80px; /* Adjust margin to match sidebar width */
+    flex-grow: 1;
     padding: 1rem;
-    overflow-y: auto; /* Add scroll if content overflows */
+    background: #14273d; /* Slightly lighter blue */
+    transition: margin-left 0.3s ease-in-out;
 }
 
-.header--wrapper img {
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    border-radius: 50%;
+.sidebar:hover + .main--content {
+    margin-left: 240px; /* Adjust content when sidebar expands */
 }
 
 .header--wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    background: #fff;
+    background: #0a1733;
     border-radius: 10px;
     padding: 10px 2rem;
     margin-bottom: 1rem;
 }
 
 .header--title {
-    color: rgba(113, 99, 186, 255);
+    color: #ffffff;
 }
 
 .user--info {
     display: flex;
     align-items: center;
-    gap: 1rem;
 }
 
-.search--box {
-    background: rgb(237, 237, 237);
-    border-radius: 15px;
-    color: rgba(113, 99, 186, 255);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
+.user--info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 1rem;
 }
 
-.search--box input {
-    background: transparent;
-    padding: 10px;
-}
-
-.search--box i {
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.5s ease-out;
-}
-
-.search--box i:hover {
-    transform: scale(1.2);
-}
-
-/* Card Divs */
-.card--container {
-    background: #fff;
+.account-balance {
+    background: #0a1733;
     padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.balance-display {
+    font-size: 2rem;
+    color: #5bc0de;
+}
+
+.big-card {
+    background: #0a1733;
+    padding: 1.5rem;
     border-radius: 10px;
 }
 
 .card--wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Change to 3 columns for the cards */
+    gap: 1rem; /* Maintain the space between cards */
+    margin: 0; /* Ensure no extra margins on the wrapper */
+}
+
+
+.service--card {
+    background: #1f4a73;
+    height: 80px; /* Maintain same height */
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.main--title {
-    color: rgba(113, 99, 186, 255);
-    padding-bottom: 10px;
-    font-size: 15px;
-}
-
-.payment--card {
-    background: rgb(229, 223, 223);
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: center;
+    align-items: center; /* Center items in card */
     border-radius: 10px;
-    padding: 1.2rem;
-    width: 290px;
-    height: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     transition: all 0.5s ease-in-out;
+    padding: 0.5rem; /* Padding inside the card */
+    flex-grow: 1; /* Allow cards to grow equally */
+    min-width: 150px; /* Prevent shrinking */
 }
 
-.payment--card:hover {
-    transform: translateY(-5px);
+.service--card i {
+    font-size: 2rem; /* Icon size */
+    color: #fff; /* Icon color */
+    margin-bottom: 0.5rem; /* Space below icon */
 }
 
-.card--header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+.service--card span {
+    color: #fff; /* Text color */
+    font-size: 0.9rem; /* Font size for service name */
 }
 
-.amount {
-    display: flex;
-    flex-direction: column;
-}
-
-.title {
-    font-size: 12px;
-    font-weight: 200;
-}
-
-.amount--value {
-    font-size: 24px;
-    font-family: "Courier New", Courier, monospace;
-    font-weight: 600;
-}
-
-.icon {
-    color: #fff;
-    padding: 1rem;
-    height: 60px;
-    width: 60px;
-    text-align: center;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    background: red;
-}
-
-.card-detail {
-    font-size: 18px;
-    color: #777777;
-    letter-spacing: 2px;
-    font-family: "Courier New", Courier, monospace;
-}
-
-/* Color References */
-.light-red {
-    background: rgb(251, 233, 233);
-}
-
-.light-purple {
-    background: rgb(254, 226, 254);
-}
-
-.light-green {
-    background: rgb(235, 254, 235);
-}
-
-.light-blue {
-    background: rgb(236, 236, 254);
-}
-
-.dark-red {
-    background: red;
-}
-
-.dark-purple {
-    background: purple;
-}
-
-.dark-green {
-    background: green;
-}
-
-.dark-blue {
-    background: blue;
-}
-
-/* Tables */
 .tabular--wrapper {
-    background: #fff;
+    background: #0a1733;
     margin-top: 1rem;
     border-radius: 10px;
     padding: 0.5rem;
 }
 
-.table-container {
+table {
     width: 100%;
+    border-collapse: collapse;
+    color: #fff;
 }
 
-table {
+thead {
+    background: #5bc0de;
+}
+
+tbody {
+    background: #14273d;
+}
+
+td, th {
+    padding: 15px;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    justify-content: center; /* Center the modal horizontally */
+    align-items: center; /* Center the modal vertically */
+}
+
+.modal-content {
+    background-color: #1f4a73; /* Match the website's color scheme */
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 600px; /* Maximum width of modal */
+    border-radius: 10px; /* Rounded corners for modern look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+.modal h3 {
+    color: #fff; /* White title text for better contrast */
+}
+
+.modal label {
+    color: #fff; /* White label text */
+}
+
+.modal input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px; /* Rounded corners */
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.modal .btn {
+    background-color: #5bc0de; /* Base button color */
+    color: #fff; /* Text color */
+    border: none;
+    padding: 12px 20px; /* Increased padding for a more comfortable click area */
+    border-radius: 25px; /* More rounded corners for a modern look */
+    cursor: pointer;
+    font-size: 16px; /* Slightly larger text */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.modal .btn:hover {
+    background-color: #4da3c0; /* Darker shade on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.modal .btn:active {
+    transform: translateY(0); /* Reset lift effect when button is active */
+}
+
+
+.table-container {
+    max-height: 400px; /* Set max height for scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.modal table {
     width: 100%;
     border-collapse: collapse;
 }
 
-thead {
-    background: rgba(113, 99, 186, 255);
-    color: #fff;
-}
-
-th {
+.modal th,
+.modal td {
     padding: 15px;
-    text-align: left;
+    color: #fff; /* White text color for table */
 }
 
-tbody {
-    background: #f2f2f2;
-}
-
-td {
-    padding: 15px;
-    font-size: 14px;
-    color: #333;
-}
-
-tr:nth-child(even) {
-    background: #fff;
-}
-
-tfoot {
-    background: rgba(113, 99, 186, 255);
-    font-weight: bold;
-    color: #fff;
-}
-
-tfoot td {
-    padding: 15px;
-    color: #fff;
-}
-
-.table-container button {
-    color: green;
-    background: none;
-    cursor: pointer;
+.modal thead {
+    background: #5bc0de; /* Header background */
 }
