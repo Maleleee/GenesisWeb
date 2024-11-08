@@ -1,2 +1,2 @@
 
-@app.route('/predict')
+def on_disconnect():

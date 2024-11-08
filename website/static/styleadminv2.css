@@ -312,40 +312,47 @@ main .analyse .progresss .percentage{
     width: 100%;
 }
 
-main .new-users{
+/* User Data Table */
+main .user-data {
     margin-top: 1.3rem;
 }
 
-main .new-users .user-list{
+main .user-data h2 {
+    margin-bottom: 0.8rem;
+}
+
+main .user-data table {
     background-color: var(--color-white);
+    width: 100%;
     padding: var(--card-padding);
-    border-radius: var(--card-border-radius);
-    margin-top: 1rem;
+    text-align: center;
     box-shadow: var(--box-shadow);
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 1.4rem;
-    cursor: pointer;
+    border-radius: var(--card-border-radius);
     transition: all 0.3s ease;
 }
 
-main .new-users .user-list:hover{
+main .user-data table:hover {
     box-shadow: none;
 }
 
-main .new-users .user-list .user{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+main .user-data table tbody td {
+    height: 2.8rem;
+    border-bottom: 1px solid var(--color-light);
+    color: var(--color-dark-variant);
 }
 
-main .new-users .user-list .user img{
-    width: 5rem;
-    height: 5rem;
-    margin-bottom: 0.4rem;
-    border-radius: 50%;
+main .user-data table tbody tr:last-child td {
+    border: none;
+}
+
+.user-data #ipFilter,
+.user-data #labelFilter {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    width: 15%;
+    border: 1px solid var(--color-light);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
 }
 
 main .recent-logins{
@@ -714,4 +721,93 @@ main .recent-logins a{
         font-size: 2rem;
     }
 
+}
+
+/* Pagination Styles */
+#pagination {
+    display: flex;
+    justify-content: center; /* Center the pagination controls */
+    margin-top: 20px; /* Add some space above the pagination */
+}
+
+#pagination button {
+    background-color: var(--color-dark-variant); /* Use your primary color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: var(--card-border-radius); /* Match existing border radius */
+    padding: 10px 15px; /* Add padding */
+    margin: 0 10px; /* Space between buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+#pagination button:hover {
+    background-color: var(--color-primary); /* Darker shade on hover */
+}
+
+#pagination span {
+    align-self: center; /* Center the text vertically */
+    margin: 0 10px; /* Space around the text */
+    font-weight: bold; /* Make the text bold */
+}
+
+#pagination input {
+    width: 50px; /* Set a fixed width for the input */
+    padding: 5px; /* Add padding */
+    border: 1px solid var(--color-light); /* Light border */
+    border-radius: var(--border-radius-1); /* Match existing border radius */
+    margin: 0 5px; /* Space around the input */
+}
+
+.user-data table {
+    width: 100%; /* Ensure the table takes full width */
+    table-layout: fixed; /* Use fixed layout for balanced column widths */
+}
+
+.user-data th, 
+.user-data td {
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    white-space: nowrap; /* Prevent text from wrapping */
+    padding: 10px; /* Add padding for better spacing */
+}
+
+.user-data th {
+    width: 20%; /* Set equal width for each column */
+}
+
+.recent-logins table {
+    width: 100%; /* Ensure the table takes full width */
+    table-layout: fixed; /* Use fixed layout for balanced column widths */
+}
+
+.recent-logins th, 
+.recent-logins td {
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    white-space: nowrap; /* Prevent text from wrapping */
+    padding: 10px; /* Add padding for better spacing */
+}
+
+.recent-logins th {
+    width: 33%; /* Set equal width for each column */
+}
+
+.styled-button {
+    background-color: #238170; /* Green background */
+    color: white; /* White text */
+    border: none; /* No border */
+    padding: 10px 20px; /* Some padding */
+    text-align: center; /* Centered text */
+    text-decoration: none; /* No underline */
+    display: inline-block; /* Inline-block for spacing */
+    font-size: 16px; /* Larger font size */
+    margin: 4px 2px; /* Margin for spacing */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.styled-button:hover {
+    background-color: #1be0bc; /* Darker green on hover */
 }
