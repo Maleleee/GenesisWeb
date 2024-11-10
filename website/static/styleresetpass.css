@@ -62,3 +62,7 @@
     font-size: 14px;
     margin-top: 10px;
 }
+
+.submit-btn:hover {
+    background-color: #6E66CD;
+}

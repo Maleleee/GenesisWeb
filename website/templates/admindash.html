@@ -1,209 +1,991 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='styleadminv2.css') }}" />
     <title>Admin Dashboard V2 Genesis</title>
-  </head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
-  <body>
+<body>
     <div class="container">
-      <!-- Sidebar Section -->
-      <aside>
-        <div class="toggle">
-          <div class="logo">
-            <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
-            <h2>GENESIS</h2>
-          </div>
-          <div class="close" id="close-btn">
-            <span class="material-icons-sharp">close</span>
-          </div>
+        <!-- Sidebar Section -->
+        <aside>
+            <div class="toggle">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
+                    <h2>GENESIS</h2>
+                </div>
+                <div class="close" id="close-btn">
+                    <span class="material-icons-sharp">close</span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <a href="#" onclick="showContent('analytics')">
+                    <span class="material-icons-sharp">insights</span>
+                    <h3>Analytics</h3>
+                </a>
+
+                <a href="#" onclick="showContent('reports')">
+                    <span class="material-icons-sharp">report_gmailerrorred</span>
+                    <h3>Reports</h3>
+                </a>
+
+                <a id="logout" class="logout" href="/logout">
+                    <span class="material-icons-sharp">logout</span>
+                    <h3>Logout</h3>
+                </a>
+            </div>
+        </aside>
+        <!-- End of Sidebar Section -->
+
+        <!-- Main Content -->
+        <main id="mainContent">
+            <div id="analyticsContent">
+                <h1>Analytics</h1>
+                <div class="analyse">
+                    <div class="sales">
+                        <div class="status">
+                            <div class="info">
+                                <h3>Total Users </h3> 
+                                <h1>{{ total_users }}</h1>
+                            </div>
+                            <div class="progresss">
+                                <svg>
+                                    <circle cx="38" cy="38" r="36"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="visits">
+                        <div class="status">
+                            <div class="info">
+                                <h3>Site Visit</h3>
+                            </div>
+                            <div class="progresss">
+                                <svg>
+                                    <circle cx="38" cy="38" r="36"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="searches">
+                        <div class="status">
+                            <div class="info">
+                                <h3>Searches</h3>
+                            </div>
+                            <div class="progresss">
+                                <svg>
+                                    <circle cx="38" cy="38" r="36"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Data Table Section -->
+                <div class="network-data">
+                    <h2>Network Data</h2>
+                    <div class="parent">
+                        <div class="right">
+                            <input type="text" id="ipFilter" placeholder="Filter by IP Address" onkeyup="filterTable()" aria-label="Filter by IP Address">
+                            <input type="text" id="labelFilter" placeholder="Filter by Label" onkeyup="filterTable()" aria-label="Filter by Label">
+                        </div>
+                        <div id="pagination" class="center" style="margin-bottom: 1rem;">
+                            <button id="prevBtn" onclick="changePage(-1)">&lt;</button>
+                            <input type="number" id="pageInput" placeholder="Page" min="1" aria-label="Page #" />
+                            <span id="pageInfo"></span>
+                            <button id="nextBtn" onclick="changePage(1)">&gt;</button>
+                        </div> <!-- Pagination controls -->
+                        <div class="left"></div> <!-- Empty element to center pagination -->
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Source IP Address</th>
+                                <th scope="col">Packet Size</th>
+                                <th scope="col">Request Rate</th>
+                                <th scope="col">Label</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userDataBody">
+                            <!-- Initially empty; rows will be appended here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- End of Network Data Table Section -->
+
+                <!-- Recent Logins Table -->
+                <div class="recent-logins">
+                    <h2>Recent Logins</h2>
+                    <div class="parent">
+                        <div class="right">
+                            <input type="text" id="emailFilter" placeholder="Filter by Email" onkeyup="filterLoginTable()" aria-label="Filter by Email">
+                            <input type="text" id="usernameFilter" placeholder="Filter by Username" onkeyup="filterLoginTable()" aria-label="Filter by Username">
+                        </div>
+                        <div id="pagination" class="center" style="margin-bottom: 1rem;">
+                            <button id="loginPrevBtn" onclick="changeLoginPage(-1)">&lt;</button>
+                            <input type="number" id="loginPageInput" placeholder="Page" min="1" aria-label="Page #" />
+                            <span id="loginPageInfo"></span>
+                            <button id="loginNextBtn" onclick="changeLoginPage(1)">&gt;</button>
+                        </div> <!-- Pagination controls -->
+                        <div class="left"></div> <!-- Empty element to center pagination -->
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentLoginsDataBody">
+                            <!-- Initially empty; rows will be appended here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- End of Recent Logins -->
+            </div>
+            <div id="reportsContent" style="display: none;">
+                <h1>Reports</h1>
+                <canvas id="attackChart"></canvas>
+                <div>
+                    <button class="styled-button" onclick="updateChart('24h')">24h</button>
+                    <button class="styled-button" onclick="updateChart('168h')">7d</button>
+                    <button class="styled-button" onclick="updateChart('30d')">1m</button>
+                    <button class="styled-button" onclick="updateChart('90d')">3m</button>
+                    <button class="styled-button" onclick="updateChart('6m')">6m</button>
+                    <button class="styled-button" onclick="updateChart('12m')">1y</button>
+                    <button class="styled-button" onclick="updateChart('all')">All</button>
+                </div>
+            </div>
+        </main>
+        <!-- End of Main Content -->
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <div class="nav">
+                <button id="menu-btn"><span class="material-icons-sharp">menu</span></button>
+                <div class="dark-mode">
+                    <span class="material-icons-sharp active">light_mode</span>
+                    <span class="material-icons-sharp">dark_mode</span>
+                </div>
+
+                <div class="profile">
+                    <div class="info">
+                        <p>Hey, <b>{{user.username}}</b></p>
+                        <small class="text-muted">Admin</small>
+                    </div>
+                    <div class="profile-photo">
+                        <img src="{{ url_for('static', filename='images/adminv2.png') }}" />
+                    </div>
+                </div>
+            </div>
+            <!-- End of Nav -->
+
+            <div class="user-profile">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
+                    <h2>Genesis</h2>
+                </div>
+            </div>
+
+            <div class="reminders">
+                <div class="header">
+                    <h2>Reminders</h2>
+                    <span class="material-icons-sharp">notifications_none</span>
+                </div>
+
+                <div class="notification">
+                    <div class="icon">
+                        <span class="material-icons-sharp">volume_up</span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Finish ML Model</h3>
+                            <small class="text_muted">All Day</small>
+                        </div>
+                        <span class="material-icons-sharp">more_vert</span>
+                    </div>
+                </div>
+
+                <div class="notification deactive">
+                    <div class="icon">
+                        <span class="material-icons-sharp">edit</span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Cry</h3>
+                            <small class="text_muted">08:00 AM - 12:00 PM</small>
+                        </div>
+                        <span class="material-icons-sharp">more_vert</span>
+                    </div>
+                </div>
+
+                <div class="notification add-reminder">
+                    <div>
+                        <span class="material-icons-sharp">add</span>
+                        <h3>Add Reminder</h3>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="sidebar">
-          <a href="#" class="active">
-            <span class="material-icons-sharp">insights</span>
-            <h3>Analytics</h3>
-          </a>
-
-          <a href="#">
-            <span class="material-icons-sharp">report_gmailerrorred</span>
-            <h3>Reports</h3> <!-- Maybe this is where the reports of the ML Model is gonna be -->
-          </a>
-        
-          <a id="logout" class="logout" href="/logout">
-            <span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3>
-          </a>
-        </div>
-      </aside>
-      <!-- End of Sidebar Section -->
-
-      <!-- Main Content -->
-      <main>
-        <h1>Analytics</h1>
-        <!-- Analysis -->
-        <div class="analyse">
-          <div class="sales">
-            <div class="status">
-              <div class="info">
-                <h3>Total Users </h3> 
-                <h1>{{ total_users}}</h1>
-              </div>
-              <div class="progresss">
-                <svg>
-                  <circle cx="38" cy="38" r="36"></circle>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="visits">
-            <div class="status">
-              <div class="info">
-                <h3>Site Visit</h3>
-                <!-- <h1>10</h1> Not sure how to implement yet -->
-              </div>
-              <div class="progresss">
-                <svg>
-                  <circle cx="38" cy="38" r="36"></circle>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="searches">
-            <div class="status">
-              <div class="info">
-                <h3>Searches</h3>
-                <!-- <h1>69</h1> Not sure how to implement yet -->
-              </div>
-              <div class="progresss">
-                <svg>
-                  <circle cx="38" cy="38" r="36"></circle>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- End of Analysis -->
-        <!-- New Users Section -->
-        <div class="new-users">
-          <h2>New Users</h2>
-          <div class="user-list">
-            {% for user in new_users %}
-              <div class="user">
-                <!-- Adjust image source as needed -->
-                <img src="{{ url_for('static', filename='images/placeholderpicture.jpg') }}" />
-                <h2>{{ user.username }}</h2>
-                <!-- Use date_created or any other appropriate attribute -->
-                <p>{{ user.date_created }}</p>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-        <!-- End of New Users Section -->
-
-        <!-- Recent Logins Table -->
-        <div class="recent-logins">
-          <h2>Recent Logins</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Username</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for login_event in recent_login_events %}
-                <tr>
-                  <td>{{ login_event.email }}</td>
-                  <td>{{ login_event.username }}</td>
-                  <td>{{ login_event.timestamp }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <a href="#">Show All</a>
-        </div>
-        <!-- End of Recent Logins -->
-      </main>
-      <!-- End of Main Content -->
-
-      <!-- Right Section -->
-      <div class="right-section">
-        <div class="nav">
-          <button id="menu-btn"><span class="material-icons-sharp">menu</span></button>
-          <div class="dark-mode">
-            <span class="material-icons-sharp active">light_mode</span>
-            <span class="material-icons-sharp">dark_mode</span>
-          </div>
-
-          <div class="profile">
-            <div class="info">
-              <p>
-                Hey, <b>Allen</b>
-              </p>
-              <small class="text-muted">Admin</small>
-            </div>
-            <div class="profile-photo">
-              <img src="{{ url_for('static', filename='images/adminv2.png') }}" />
-            </div>
-          </div>
-        </div>
-        <!-- End of Nav -->
-
-        <div class="user-profile">
-          <div class="logo">
-            <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
-            <h2>Genesis</h2>
-          </div>
-        </div>
-
-        <div class="reminders">
-          <div class="header">
-            <h2>Reminders</h2>
-            <span class="material-icons-sharp">notifications_none</span>
-          </div>
-
-          <div class="notification">
-            <div class="icon">
-              <span class="material-icons-sharp">volume_up</span>
-            </div>
-            <div class="content">
-              <div class="info">
-                <h3>Finish ML Model</h3>
-                <small class="text_muted">All Day</small>
-              </div>
-              <span class="material-icons-sharp">more_vert</span>
-            </div>
-          </div>
-
-          <div class="notification deactive">
-            <div class="icon">
-              <span class="material-icons-sharp">edit</span>
-            </div>
-            <div class="content">
-              <div class="info">
-                <h3>Cry</h3>
-                <small class="text_muted">08:00 AM - 12:00 PM</small>
-              </div>
-              <span class="material-icons-sharp">more_vert</span>
-            </div>
-          </div>
-
-          <div class="notification add-reminder">
-            <div>
-              <span class="material-icons-sharp">add</span>
-              <h3>Add Reminder</h3>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <script src="orders.js"></script>
-    <script src="{{ url_for('static', filename='adminv2.js') }}"></script>
-  </body>
+    <br>
+
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        let totalRows = 0; // To keep track of total rows
+        let attackData = []; // Store fetched data
+        let currentLoginPage = 1;
+        const rowsPerLoginPage = 5;
+        let totalLoginRows = 0; // To keep track of total rows
+        let recentLoginData = []; // Store fetched data
+        let attackChart;
+        let isTimerTriggered = false; // Flag to check if refresh is triggered by timer
+        let currentTimeRange = getCookie('currentTimeRange') || '24h'; // Default time range
+
+        function fetchAttackData() {
+            fetch('/get_attack_data')
+                .then(response => response.json())
+                .then(data => {
+                    attackData = data.reverse(); // Store fetched data
+                    totalRows = attackData.length; // Update total rows
+                    displayPage(currentPage); // Display the current page
+                    setupPagination(totalRows, false); // Setup pagination without updating input
+                    filterTable(); // Reapply filters after data refresh
+                    isTimerTriggered = false; // Reset the flag after manual refresh
+                })
+                .catch(error => console.error('Error fetching attack data:', error));
+        }
+
+        function fetchrecentLoginData() {
+            fetch('/get_recent_login_data')
+                .then(response => response.json())
+                .then(data => {
+                    recentLoginData = data; // Store fetched data
+                    totalLoginRows = recentLoginData.length; // Update total rows
+                    displayLoginPage(currentLoginPage); // Display the current page
+                    setupLoginPagination(totalLoginRows, false); // Setup pagination without updating input
+                    filterLoginTable(); // Reapply filters after data refresh
+                    isTimerTriggered = false; // Reset the flag after manual refresh
+                })
+                .catch(error => console.error('Error fetching recent login data:', error));
+        }
+
+        function setupPagination(totalRows, updateInput = true) {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            currentPage = Math.max(1, Math.min(currentPage, totalPages)); // Ensure currentPage stays within bounds
+            document.getElementById('pageInfo').innerText = ` of ${totalPages}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            document.getElementById('pageInput').max = totalPages; // Set max input value
+            
+            // Update the input value only if updateInput is true
+            if (updateInput) {
+                document.getElementById('pageInput').value = currentPage; // Set current page in input
+            }
+        }
+
+        function setupLoginPagination(totalLoginRows, updateInput = true) {
+            const totalLoginPages = Math.ceil(totalLoginRows / rowsPerLoginPage);
+            currentLoginPage = Math.max(1, Math.min(currentLoginPage, totalLoginPages)); // Ensure currentLoginPage stays within bounds
+            document.getElementById('loginPrevBtn').disabled = currentLoginPage === 1;
+            document.getElementById('loginPageInfo').innerText = ` of ${totalLoginPages}`;
+            document.getElementById('loginNextBtn').disabled = currentLoginPage === totalLoginPages;
+            document.getElementById('loginPageInput').max = totalLoginPages; // Set max input value
+            
+            // Update the input value only if updateInput is true
+            if (updateInput) {
+                document.getElementById('loginPageInput').value = currentLoginPage; // Set current page in input
+            }
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            currentPage += direction;
+            currentPage = Math.max(1, Math.min(currentPage, totalPages)); // Ensure currentPage stays within bounds
+            displayPage(currentPage); // Display the current page
+            setupPagination(filteredData.length || totalRows); // Update pagination info
+        }
+
+        function changeLoginPage(direction) {
+            const totalLoginPages = Math.ceil(totalLoginRows / rowsPerLoginPage);
+            currentLoginPage += direction;
+            currentLoginPage = Math.max(1, Math.min(currentLoginPage, totalLoginPages)); // Ensure currentLoginPage stays within bounds
+            displayLoginPage(currentLoginPage); // Display the current page
+            setupLoginPagination(filteredLoginData.length || totalLoginRows); // Update pagination info
+        }
+
+        function goToPage() {
+            const totalFilteredRows = attackData.filter(item => {
+                const ipFilter = document.getElementById('ipFilter').value.toLowerCase();
+                const labelFilter = document.getElementById('labelFilter').value.toLowerCase();
+                const ipMatch = item.ip.toLowerCase().includes(ipFilter);
+                const labelMatch = item.label.toLowerCase().includes(labelFilter);
+                return ipMatch && labelMatch; // Return true if both match
+            }).length; // Get the count of filtered rows
+
+            const totalPages = Math.ceil(totalFilteredRows / rowsPerPage); // Calculate total pages based on filtered data
+            const inputPage = parseInt(document.getElementById('pageInput').value);
+            if (inputPage >= 1 && inputPage <= totalPages) {
+                currentPage = inputPage; // Set current page to input value
+                displayPage(currentPage); // Display the current page
+                setupPagination(filteredData.length || totalRows); // Update pagination info
+            } else {
+                alert(`Please enter a valid page number between 1 and ${totalPages}.`);
+            }
+        }
+
+        function goToLoginPage() {
+            const totalFilteredLoginRows = recentLoginData.filter(item => {
+                const emailFilter = document.getElementById('emailFilter').value.toLowerCase();
+                const usernameFilter = document.getElementById('usernameFilter').value.toLowerCase();
+                const emailMatch = item.email.toLowerCase().includes(emailFilter);
+                const usernameMatch = item.username.toLowerCase().includes(usernameFilter);
+                return emailMatch && usernameMatch; // Return true if both match
+            }).length; // Get the count of filtered rows
+
+            const totalLoginPages = Math.ceil(totalFilteredLoginRows / rowsPerLoginPage); // Calculate total pages based on filtered data
+            const inputLoginPage = parseInt(document.getElementById('loginPageInput').value);
+            if (inputLoginPage >= 1 && inputLoginPage <= totalLoginPages) {
+                currentLoginPage = inputLoginPage; // Set current page to input value
+                displayLoginPage(currentLoginPage); // Display the current page
+                setupLoginPagination(filteredLoginData.length || totalLoginRows); // Update pagination info
+            } else {
+                alert(`Please enter a valid page number between 1 and ${totalLoginPages}.`);
+            }
+        }
+
+        function displayPage(page) {
+            const userDataBody = document.getElementById('userDataBody');
+            userDataBody.innerHTML = ''; // Clear current data
+
+            // Filter the attack data based on the current filter inputs
+            const ipFilter = document.getElementById('ipFilter').value.toLowerCase();
+            const labelFilter = document.getElementById('labelFilter').value.toLowerCase();
+            
+            const filteredData = attackData.filter(item => {
+                const ipMatch = item.ip.toLowerCase().includes(ipFilter);
+                const labelMatch = item.label.toLowerCase().includes(labelFilter);
+                return ipMatch && labelMatch; // Return true if both match
+            });
+
+            // Calculate the start and end indices for pagination
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = filteredData.slice(start, end); // Use filtered data
+
+            // Display the paginated filtered data
+            paginatedData.forEach(item => {
+                const row = document.createElement('tr');
+                const formattedTimestamp = new Intl.DateTimeFormat('default', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    timeZoneName: 'short'
+                }).format(new Date(item.timestamp * 1000)); // Format timestamp with timezone
+                row.innerHTML = `
+                    <td>${formattedTimestamp}</td>
+                    <td>${item.ip}</td>
+                    <td>${item.packet_size}</td>
+                    <td>${item.request_rate}</td>
+                    <td>${item.label}</td>
+                `;
+                userDataBody.appendChild(row);
+            });
+
+            // Only refresh the page input value if not triggered by timer
+            if (!isTimerTriggered) {
+                setupPagination(filteredData.length); // Update pagination based on filtered data
+            } else {
+                setupPagination(filteredData.length, false);
+            }
+        }
+
+        function displayLoginPage(page) {
+            const recentLoginsDataBody = document.getElementById('recentLoginsDataBody');
+            recentLoginsDataBody.innerHTML = ''; // Clear current data
+
+            // Filter the recent logins data based on the current filter inputs
+            const emailFilter = document.getElementById('emailFilter').value.toLowerCase();
+            const usernameFilter = document.getElementById('usernameFilter').value.toLowerCase();
+            
+            const filteredLoginData = recentLoginData.filter(item => {
+                const emailMatch = item.email.toLowerCase().includes(emailFilter);
+                const usernameMatch = item.username.toLowerCase().includes(usernameFilter);
+                return emailMatch && usernameMatch; // Return true if both match
+            });
+
+            // Calculate the loginStart and loginEnd indices for pagination
+            const loginStart = (page - 1) * rowsPerLoginPage;
+            const loginEnd = loginStart + rowsPerLoginPage;
+            const paginatedLoginData = filteredLoginData.slice(loginStart, loginEnd); // Use filtered data
+
+            // Display the paginated filtered data
+            paginatedLoginData.forEach(item => {
+                const row = document.createElement('tr');
+                const formattedTimestamp = new Intl.DateTimeFormat('default', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    timeZoneName: 'short'
+                }).format(new Date(item.timestamp * 1000)); // Format timestamp with timezone
+                row.innerHTML = `
+                    <td>${formattedTimestamp}</td>
+                    <td>${item.email}</td>
+                    <td>${item.username}</td>
+                `;
+                recentLoginsDataBody.appendChild(row);
+            });
+
+            // Only refresh the page input value if not triggered by timer
+            if (!isTimerTriggered) {
+                setupLoginPagination(filteredLoginData.length); // Update pagination based on filtered data
+            } else {
+                setupLoginPagination(filteredLoginData.length, false);
+            }
+        }
+
+        // Fetch data every 10 seconds
+        setInterval(() => {
+            isTimerTriggered = true; // Set the flag before fetching data
+            fetchAttackData();
+            fetchrecentLoginData();
+        }, 10000);
+        // Initial fetch
+        fetchAttackData();
+        fetchrecentLoginData();
+
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+
+        // Function to get a cookie
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+            }, '');
+        }
+
+        // Check cookie on page load to set initial mode
+        window.onload = function() {
+            const mode = getCookie('darkMode');
+            if (mode === 'true') {
+                document.body.classList.add('dark-mode-variables');
+                darkMode.querySelector('span:nth-child(1)').classList.remove('active');
+                darkMode.querySelector('span:nth-child(2)').classList.add('active');
+            } else {
+                darkMode.querySelector('span:nth-child(1)').classList.add('active'); // Set light mode active
+                darkMode.querySelector('span:nth-child(2)').classList.remove('active'); // Remove dark mode active
+            }
+            // Check session storage for the active tab
+            const activeTab = sessionStorage.getItem('activeTab');
+            if (activeTab) {
+                showContent(activeTab); // Show the saved tab
+            } else {
+                showContent('analytics'); // Default to analytics if no tab is saved
+            }
+        };
+
+        // Save currentTimeRange as a cookie whenever it changes
+        function updateTimeRange(newTimeRange) {
+            currentTimeRange = newTimeRange;
+            setCookie('currentTimeRange', currentTimeRange, 7); // Save for 7 days
+        };
+
+        // Event listeners for sidebar and dark mode toggle
+        const sideMenu = document.querySelector('aside');
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const darkMode = document.querySelector('.dark-mode');
+
+        menuBtn.addEventListener('click', () => {
+            sideMenu.style.display = 'block';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            sideMenu.style.display = 'none';
+        });
+
+        darkMode.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode-variables');
+            darkMode.querySelector('span:nth-child(1)').classList.toggle('active');
+            darkMode.querySelector('span:nth-child(2)').classList.toggle('active');
+            
+            // Save user preference in cookie
+            setCookie('darkMode', document.body.classList.contains('dark-mode-variables'), 30); // Set cookie for 30 days
+        });
+
+        // Function to filter table by label
+        function filterTable() {
+            const ipFilter = document.getElementById('ipFilter').value.toLowerCase();
+            const labelFilter = document.getElementById('labelFilter').value.toLowerCase();
+            const userDataBody = document.getElementById('userDataBody');
+            
+            // Clear current data
+            userDataBody.innerHTML = '';
+
+            // Filter the attack data based on the input values
+            const filteredData = attackData.filter(item => {
+                const ipMatch = item.ip.toLowerCase().includes(ipFilter);
+                const labelMatch = item.label.toLowerCase().includes(labelFilter);
+                return ipMatch && labelMatch; // Return true if both match
+            });
+
+            // Check if the current page exceeds the number of filtered results
+            const totalFilteredRows = filteredData.length;
+            const totalPages = Math.ceil(totalFilteredRows / rowsPerPage);
+            if (currentPage > totalPages) {
+                currentPage = totalPages; // Reset to the last valid page
+            }
+
+            // Display the filtered data
+            displayFilteredData(filteredData); // Call a new function to display filtered data
+        }
+        
+        // Function to filter table by username
+        function filterLoginTable() {
+            const emailFilter = document.getElementById('emailFilter').value.toLowerCase();
+            const usernameFilter = document.getElementById('usernameFilter').value.toLowerCase();
+            const recentLoginsDataBody = document.getElementById('recentLoginsDataBody');
+            
+            // Clear current data
+            recentLoginsDataBody.innerHTML = '';
+
+            // Filter the recent logins data based on the input values
+            const filteredLoginData = recentLoginData.filter(item => {
+                const emailMatch = item.email.toLowerCase().includes(emailFilter);
+                const usernameMatch = item.username.toLowerCase().includes(usernameFilter);
+                return emailMatch && usernameMatch; // Return true if both match
+            });
+
+            // Check if the current page exceeds the number of filtered results
+            const totalFilteredLoginRows = filteredLoginData.length;
+            const totalLoginPages = Math.ceil(totalFilteredLoginRows / rowsPerLoginPage);
+            if (currentLoginPage > totalLoginPages) {
+                currentLoginPage = totalLoginPages; // Reset to the last valid page
+            }
+
+            // Display the filtered data
+            displayFilteredLoginData(filteredLoginData); // Call a new function to display filtered data
+        }
+
+        function showContent(content) {
+            const analyticsContent = document.getElementById('analyticsContent');
+            const reportsContent = document.getElementById('reportsContent');
+
+            if (content === 'analytics') {
+                analyticsContent.style.display = 'block';
+                reportsContent.style.display = 'none';
+                document.querySelector('.active').classList.remove('active');
+                document.querySelector('a[onclick="showContent(\'analytics\')"]').classList.add('active');
+                sessionStorage.setItem('activeTab', 'analytics'); // Save the active tab in session storage
+            } else if (content === 'reports') {
+                analyticsContent.style.display = 'none';
+                reportsContent.style.display = 'block';
+                document.querySelector('.active').classList.remove('active');
+                document.querySelector('a[onclick="showContent(\'reports\')"]').classList.add('active');
+                sessionStorage.setItem('activeTab', 'reports'); // Save the active tab in session storage
+                updateChart(currentTimeRange);
+            }
+
+            // Ensure dark mode is applied when switching tabs
+            const mode = getCookie('darkMode');
+            if (mode === 'true') {
+                document.body.classList.add('dark-mode-variables');
+                darkMode.querySelector('span:nth-child(1)').classList.remove('active');
+                darkMode.querySelector('span:nth-child(2)').classList.add('active');
+            } else {
+                darkMode.querySelector('span:nth-child(1)').classList.add('active'); // Set light mode active
+                darkMode.querySelector('span:nth-child(2)').classList.remove('active'); // Remove dark mode active
+            }
+        }
+
+        function displayFilteredData(filteredData) {
+            const userDataBody = document.getElementById('userDataBody');
+            userDataBody.innerHTML = ''; // Clear current data
+
+            // Calculate the total number of pages based on filtered data
+            const totalFilteredRows = filteredData.length;
+            const totalPages = Math.ceil(totalFilteredRows / rowsPerPage);
+            
+            // Reset to page 1 if currentPage is 0 or exceeds totalPages
+            currentPage = Math.max(1, Math.min(currentPage, totalPages));
+
+            // Update pagination info
+            if (!isTimerTriggered) {
+                setupPagination(totalFilteredRows); // Update pagination based on filtered data
+            } else {
+                setupPagination(totalFilteredRows, false);
+            }
+
+            // Check if there are no filtered results
+            if (totalFilteredRows === 0) {
+                userDataBody.innerHTML = '<tr><td colspan="5">No matches found</td></tr>'; // Display no matches found
+                return; // Exit the function
+            }
+
+            // Determine the current page's data to display
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = filteredData.slice(start, end); // Use filtered data
+
+            // Display the paginated filtered data
+            paginatedData.forEach(item => {
+                const row = document.createElement('tr');
+                const formattedTimestamp = new Intl.DateTimeFormat('default', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    timeZoneName: 'short'
+                }).format(new Date(item.timestamp * 1000)); // Format timestamp with timezone
+                row.innerHTML = `
+                    <td>${formattedTimestamp}</td>
+                    <td>${item.ip}</td>
+                    <td>${item.packet_size}</td>
+                    <td>${item.request_rate}</td>
+                    <td>${item.label}</td>
+                `;
+                userDataBody.appendChild(row);
+            });
+        }
+        
+        function displayFilteredLoginData(filteredLoginData) {
+            const recentLoginsDataBody = document.getElementById('recentLoginsDataBody');
+            recentLoginsDataBody.innerHTML = ''; // Clear current data
+
+            // Calculate the total number of pages based on filtered data
+            const totalFilteredLoginRows = filteredLoginData.length;
+            const totalLoginPages = Math.ceil(totalFilteredLoginRows / rowsPerLoginPage);
+            
+            // Reset to page 1 if currentLoginPage is 0 or exceeds totalLoginPages
+            currentLoginPage = Math.max(1, Math.min(currentLoginPage, totalLoginPages));
+
+            // Update pagination info
+            if (!isTimerTriggered) {
+                setupLoginPagination(totalFilteredLoginRows); // Update pagination based on filtered data
+            } else {
+                setupLoginPagination(totalFilteredLoginRows, false);
+            }
+
+            // Check if there are no filtered results
+            if (totalFilteredLoginRows === 0) {
+                recentLoginsDataBody.innerHTML = '<tr><td colspan="3">No matches found</td></tr>'; // Display no matches found
+                return; // Exit the function
+            }
+
+            // Determine the current page's data to display
+            const loginStart = (currentLoginPage - 1) * rowsPerLoginPage;
+            const loginEnd = loginStart + rowsPerLoginPage;
+            const paginatedLoginData = filteredLoginData.slice(loginStart, loginEnd); // Use filtered data
+
+            // Display the paginated filtered data
+            paginatedLoginData.forEach(item => {
+                const row = document.createElement('tr');
+                const formattedTimestamp = new Intl.DateTimeFormat('default', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    timeZoneName: 'short'
+                }).format(new Date(item.timestamp * 1000)); // Format timestamp with timezone
+                row.innerHTML = `
+                    <td>${formattedTimestamp}</td>
+                    <td>${item.email}</td>
+                    <td>${item.username}</td>
+                `;
+                recentLoginsDataBody.appendChild(row);
+            });
+        }
+        
+        // Update the chart based on the selected time range
+        function updateChart(timeRange) {
+            currentTimeRange = timeRange; // Update the current time range
+            sessionStorage.setItem('currentTimeRange', currentTimeRange); // Save to sessionStorage
+            const filteredData = filterDataByTimeRange(timeRange);
+            const labels = getLabels(timeRange);
+            const datasets = prepareDatasets(filteredData);
+
+            if (attackChart) {
+                attackChart.destroy(); // Destroy the previous chart instance
+            }
+
+            const ctx = document.getElementById('attackChart').getContext('2d');
+            attackChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 1000, // Duration of the animation in milliseconds
+                        easing: 'easeInOutQuad' // Easing function for the animation
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Packets'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index', // Show tooltip for all datasets at the same index
+                            intersect: false, // Allow tooltip to show when hovering over the line
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    const label = tooltipItem.dataset.label || '';
+                                    const value = tooltipItem.raw; // Get the value for the tooltip
+                                    return `${label}: ${value}`; // Customize the tooltip label
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.4 // Set tension to create a smooth line
+                        }
+                    }
+                }
+            });
+        }
+
+        // Filter data based on the selected time range
+        function filterDataByTimeRange(timeRange) {
+            const now = Date.now() / 1000; // Current time in seconds
+            let cutoff;
+
+            switch (timeRange) {
+                case '24h':
+                    cutoff = now - 86400; // 24 hours
+                    break;
+                case '168h':
+                    cutoff = now - 604800; // 168 hours
+                    break;
+                case '30d':
+                    cutoff = now - 2592000; // 30 days
+                    break;
+                case '90d':
+                    cutoff = now - 7776000; // 90 days
+                    break;
+                case '6m':
+                    cutoff = now - 15552000; // 6 months
+                    break;
+                case '12m':
+                    cutoff = now - 31536000; // 12 months
+                    break;
+                case 'all':
+                    return attackData; // No filtering
+            }
+
+            return attackData.filter(item => item.timestamp >= cutoff);
+        }
+
+        // Prepare datasets for the chart
+        function prepareDatasets(data) {
+            const labels = ['Normal', 'DDOS', 'Port_Scan', 'SYN_Flood', 'ICMP_Flood'];
+            const datasets = labels.map(label => {
+                const counts = []; // Array to hold counts for each time interval
+
+                // Initialize counts based on the time range
+                const timeRange = currentTimeRange; // Use the current time range
+                const now = Date.now() / 1000; // Current time in seconds
+
+                switch (timeRange) {
+                    case '24h':
+                        for (let i = 0; i < 24; i++) {
+                            const start = now - (i + 1) * 3600; // Start of the hour
+                            const end = now - i * 3600; // End of the hour
+                            const count = data.filter(item => item.label === label && item.timestamp >= start && item.timestamp < end).length;
+                            counts.unshift(count); // Add count to the beginning of the array
+                        }
+                        break;
+                    case '168h':
+                        for (let i = 0; i < 168; i++) {
+                            const start = now - (i + 1) * 3600; // Start of the hour
+                            const end = now - i * 3600; // End of the hour
+                            const count = data.filter(item => item.label === label && item.timestamp >= start && item.timestamp < end).length;
+                            counts.unshift(count); // Add count to the beginning of the array
+                        }
+                        break;
+                    case '30d':
+                        for (let i = 0; i < 30; i++) {
+                            const start = now - (i + 1) * 86400; // Start of the day
+                            const end = now - i * 86400; // End of the day
+                            const count = data.filter(item => item.label === label && item.timestamp >= start && item.timestamp < end).length;
+                            counts.unshift(count); // Add count to the beginning of the array
+                        }
+                        break;
+                    case '90d':
+                        for (let i = 0; i < 90; i++) {
+                            const start = now - (i + 1) * 86400; // Start of the day
+                            const end = now - i * 86400; // End of the day
+                            const count = data.filter(item => item.label === label && item.timestamp >= start && item.timestamp < end).length;
+                            counts.unshift(count); // Add count to the beginning of the array
+                        }
+                        break;
+                    case '6m':
+                        for (let i = 0; i < 26; i++) {
+                            const start = now - (i + 1) * 604800; // Start of the week
+                            const end = now - i * 604800; // End of the week
+                            const count = data.filter(item => item.label === label && item.timestamp >= start && item.timestamp < end).length;
+                            counts.unshift(count); // Add count to the beginning of the array
+                        }
+                        break;
+                    case '12m':
+                        for (let i = 0; i < 53; i++) {
+                            const start = now - (i + 1) * 604800; // Start of the week
+                            const end = now - i * 604800; // End of the week
+                            const count = data.filter(item => item.label === label && item.timestamp >= start && item.timestamp < end).length;
+                            counts.unshift(count); // Add count to the beginning of the array
+                        }
+                        break;
+                    case 'all':
+                        const totalMonths = Math.ceil((now - Math.min(...data.map(item => item.timestamp))) / (2592000)); // Calculate total months
+                        for (let i = 0; i < totalMonths; i++) {
+                            const start = now - (i + 1) * 2592000; // Start of the month
+                            const end = now - i * 2592000; // End of the month
+                            const count = data.filter(item => item.label === label && item.timestamp >= start && item.timestamp < end).length;
+                            counts.unshift(count); // Add count to the beginning of the array
+                        }
+                        break;
+                }
+
+                return {
+                    label: label,
+                    data: counts,
+                    fill: true,
+                    backgroundColor: getColor(label),
+                    borderColor: getColor(label),
+                    borderWidth: 1,
+                    pointStyle: false // Set pointStyle to false
+                };
+            });
+
+            return datasets;
+        }
+
+        // Get color for each label
+        function getColor(label) {
+            switch (label) {
+                case 'Normal':
+                    return 'rgba(76, 175, 80, 0.2)'; // Green
+                case 'DDOS':
+                    return 'rgba(244, 67, 54, 0.2)'; // Red
+                case 'Port_Scan':
+                    return 'rgba(255, 193, 7, 0.2)'; // Amber
+                case 'SYN_Flood':
+                    return 'rgba(33, 150, 243, 0.2)'; // Blue
+                case 'ICMP_Flood':
+                    return 'rgba(156, 39, 176, 0.2)'; // Purple
+                default:
+                    return 'rgba(0, 0, 0, 0.2)'; // Default color
+            }
+        }
+
+        // Get labels for the x-axis based on the time range
+        function getLabels(timeRange) {
+            const labels = [];
+            const now = new Date();
+            switch (timeRange) {
+                case '24h':
+                    for (let i = 0; i < 24; i++) {
+                        const hourDate = new Date(now.getTime() - (i * 3600000));
+                        hourDate.setMinutes(0, 0); // Set minutes and seconds to zero
+                        labels.push(hourDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                    }
+                    break;
+                case '168h':
+                    for (let i = 0; i < 168; i++) {
+                        const hourDate = new Date(now.getTime() - (i * 3600000));
+                        hourDate.setMinutes(0, 0); // Set minutes and seconds to zero
+                        labels.push(hourDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                    }
+                    break;
+                case '30d':
+                    for (let i = 0; i < 30; i++) {
+                        labels.push(new Date(now.getTime() - (i * 86400000)).toLocaleDateString());
+                    }
+                    break;
+                case '90d':
+                    for (let i = 0; i < 90; i++) {
+                        labels.push(new Date(now.getTime() - (i * 86400000)).toLocaleDateString());
+                    }
+                    break;
+                case '6m':
+                    for (let i = 0; i < 26; i++) {
+                        labels.push(new Date(now.getTime() - (i * 604800000)).toLocaleDateString());
+                    }
+                    break;
+                case '12m':
+                    for (let i = 0; i < 53; i++) {
+                        labels.push(new Date(now.getTime() - (i * 604800000)).toLocaleDateString());
+                    }
+                    break;
+                case 'all':
+                    // Calculate the total number of months from the oldest timestamp
+                    const oldestTimestamp = Math.min(...attackData.map(item => item.timestamp));
+                    const oldestDate = new Date(oldestTimestamp * 1000);
+                    const totalMonths = Math.ceil((now - oldestDate) / (2592000 * 1000)); // Calculate total months
+
+                    for (let i = 0; i < totalMonths; i++) {
+                        labels.push(new Date(now.getTime() - (i * 2592000000)).toLocaleDateString());
+                    }
+                    break;
+            }
+            return labels.reverse(); // Reverse to show the latest first
+        }
+
+        // Existing event listener for pageInput
+        document.getElementById('pageInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                goToPage();
+            }
+        });
+        
+        // Existing event listener for loginPageInput
+        document.getElementById('loginPageInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                goToLoginPage();
+            }
+        });
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            const body = document.querySelector('body');
+            body.classList.toggle('dark-mode');
+        }
+
+        // Check for saved user preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.querySelector('body').classList.add('dark-mode');
+        }
+
+        // Event listener for dark mode toggle button
+        document.querySelector('#darkModeToggle').addEventListener('click', () => {
+            toggleDarkMode();
+            // Save user preference
+            if (document.querySelector('body').classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    </script>
+</body>
 </html>

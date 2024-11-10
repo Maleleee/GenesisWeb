@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleadminv2.css') }}" />
+    <title>Admin Dashboard V2 Genesis</title>
+    <style>
+        #pagination {
+            display: flex;
+            justify-content: center; /* Center the pagination controls */
+            margin-top: 20px; /* Add some space above the pagination */
+        }
+
+        #pagination button {
+            margin: 0 10px; /* Add space between buttons */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar Section -->
+        <aside>
+            <div class="toggle">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
+                    <h2>GENESIS</h2>
+                </div>
+                <div class="close" id="close-btn">
+                    <span class="material-icons-sharp">close</span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <a href="#" class="active" onclick="showContent('analytics')">
+                    <span class="material-icons-sharp">insights</span>
+                    <h3>Analytics</h3>
+                </a>
+
+                <a href="#" onclick="showContent('reports')">
+                    <span class="material-icons-sharp">report_gmailerrorred</span>
+                    <h3>Reports</h3>
+                </a>
+
+                <a id="logout" class="logout" href="/logout">
+                    <span class="material-icons-sharp">logout</span>
+                    <h3>Logout</h3>
+                </a>
+            </div>
+        </aside>
+        <!-- End of Sidebar Section -->
+
+        <!-- Main Content -->
+        <main id="mainContent">
+            <div id="analyticsContent">
+                <h1>Analytics</h1>
+                <div class="analyse">
+                    <div class="sales">
+                        <div class="status">
+                            <div class="info">
+                                <h3>Total Users </h3> 
+                                <h1>{{ total_users }}</h1>
+                            </div>
+                            <div class="progresss">
+                                <svg>
+                                    <circle cx="38" cy="38" r="36"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="visits">
+                        <div class="status">
+                            <div class="info">
+                                <h3>Site Visit</h3>
+                            </div>
+                            <div class="progresss">
+                                <svg>
+                                    <circle cx="38" cy="38" r="36"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="searches">
+                        <div class="status">
+                            <div class="info">
+                                <h3>Searches</h3>
+                            </div>
+                            <div class="progresss">
+                                <svg>
+                                    <circle cx="38" cy="38" r="36"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Data Table Section -->
+                <div class="user-data">
+                <h2>User Data</h2>
+                <input type="text" id="labelSearch" placeholder="Filter by Label" onkeyup="filterTable()" aria-label="Filter by Label">
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Timestamp</th>
+                            <th scope="col">IP Address</th>
+                            <th scope="col">Packet Size</th>
+                            <th scope="col">Request Rate</th>
+                            <th scope="col">Label</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userDataBody">
+                        <!-- Initially empty; rows will be appended here by JavaScript -->
+                    </tbody>
+                </table>
+                <div id="pagination">
+                    <button id="prevBtn" onclick="changePage(-1)">Previous</button>
+                    <span id="pageInfo"></span>
+                    <button id="nextBtn" onclick="changePage(1)">Next</button>
+                    <input type="number" id="pageInput" placeholder="Page" min="1" aria-label="Page number" />
+                    <button id="goBtn" onclick="goToPage()">Go</button>
+                </div> <!-- Pagination controls -->
+                </div>
+                <!-- End of User Data Table Section -->
+
+                <!-- Recent Logins Table -->
+                <div class="recent-logins">
+                    <h2>Recent Logins</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for login_event in recent_login_events %}
+                            <tr>
+                                <td>{{ login_event.email }}</td>
+                                <td>{{ login_event.username }}</td>
+                                <td>{{ login_event.timestamp }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a href="#">Show All</a>
+                </div>
+                <!-- End of Recent Logins -->
+            </div>
+            <div id="reportsContent" style="display: none;">
+                <h1>Reports</h1>
+                <!-- Add your reports content here -->
+            </div>
+        </main>
+        <!-- End of Main Content -->
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <div class="nav">
+                <button id="menu-btn"><span class="material-icons-sharp">menu</span></button>
+                <div class="dark-mode">
+                    <span class="material-icons-sharp active">light_mode</span>
+                    <span class="material-icons-sharp">dark_mode</span>
+                </div>
+
+                <div class="profile">
+                    <div class="info">
+                        <p>Hey, <b>Allen</b></p>
+                        <small class="text-muted">Admin</small>
+                    </div>
+                    <div class="profile-photo">
+                        <img src="{{ url_for('static', filename='images/adminv2.png') }}" />
+                    </div>
+                </div>
+            </div>
+            <!-- End of Nav -->
+
+            <div class="user-profile">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/genesisicon.png') }}" />
+                    <h2>Genesis</h2>
+                </div>
+            </div>
+
+            <div class="reminders">
+                <div class="header">
+                    <h2>Reminders</h2>
+                    <span class="material-icons-sharp">notifications_none</span>
+                </div>
+
+                <div class="notification">
+                    <div class="icon">
+                        <span class="material-icons-sharp">volume_up</span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Finish ML Model</h3>
+                            <small class="text_muted">All Day</small>
+                        </div>
+                        <span class="material-icons-sharp">more_vert</span>
+                    </div>
+                </div>
+
+                <div class="notification deactive">
+                    <div class="icon">
+                        <span class="material-icons-sharp">edit</span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Cry</h3>
+                            <small class="text_muted">08:00 AM - 12:00 PM</small>
+                        </div>
+                        <span class="material-icons-sharp">more_vert</span>
+                    </div>
+                </div>
+
+                <div class="notification add-reminder">
+                    <div>
+                        <span class="material-icons-sharp">add</span>
+                        <h3>Add Reminder</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        let totalRows = 0; // To keep track of total rows
+        let attackData = []; // Store fetched data
+
+        function fetchAttackData() {
+            fetch('/get_attack_data')
+                .then(response => response.json())
+                .then(data => {
+                    attackData = data; // Store fetched data
+                    totalRows = attackData.length; // Update total rows
+                    setupPagination(); // Setup pagination
+                    displayPage(currentPage); // Display the first page
+                })
+                .catch(error => console.error('Error fetching attack data:', error));
+        }
+
+        function setupPagination() {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            document.getElementById('pageInput').max = totalPages; // Set max input value
+            document.getElementById('pageInput').value = currentPage; // Set current page in input
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            currentPage += direction;
+            currentPage = Math.max(1, Math.min(currentPage, totalPages)); // Ensure currentPage stays within bounds
+            displayPage(currentPage); // Display the current page
+            setupPagination(); // Update pagination info
+        }
+
+        function goToPage() {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            const inputPage = parseInt(document.getElementById('pageInput').value);
+            if (inputPage >= 1 && inputPage <= totalPages) {
+                currentPage = inputPage; // Set current page to input value
+                displayPage(currentPage); // Display the current page
+                setupPagination(); // Update pagination info
+            } else {
+                alert(`Please enter a valid page number between 1 and ${totalPages}.`);
+            }
+        }
+
+        function displayPage(page) {
+            const userDataBody = document.getElementById('userDataBody');
+            userDataBody.innerHTML = ''; // Clear current data
+
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = attackData.slice(start, end); // Use stored data
+
+            paginatedData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.timestamp}</td>
+                    <td>${item.ip}</td>
+                    <td>${item.packet_size}</td>
+                    <td>${item.request_rate}</td>
+                    <td>${item.label}</td>
+                `;
+                userDataBody.appendChild(row);
+            });
+        }
+
+        // Fetch data every 10 seconds
+        setInterval(fetchAttackData, 10000);
+        // Initial fetch
+        fetchAttackData();
+
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+
+        // Function to get a cookie
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+            }, '');
+        }
+
+        // Check cookie on page load to set initial mode
+        window.onload = () => {
+            const mode = getCookie('darkMode');
+            if (mode === 'true') {
+                document.body.classList.add('dark-mode-variables');
+                darkMode.querySelector('span:nth-child(1)').classList.remove('active');
+                darkMode.querySelector('span:nth-child(2)').classList.add('active');
+            }
+        };
+
+        // Event listeners for sidebar and dark mode toggle
+        const sideMenu = document.querySelector('aside');
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const darkMode = document.querySelector('.dark-mode');
+
+        menuBtn.addEventListener('click', () => {
+            sideMenu.style.display = 'block';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            sideMenu.style.display = 'none';
+        });
+
+        darkMode.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode-variables');
+            darkMode.querySelector('span:nth-child(1)').classList.toggle('active');
+            darkMode.querySelector('span:nth-child(2)').classList.toggle('active');
+        });
+
+        // Function to filter table by label
+        function filterTable() {
+            const input = document.getElementById("labelSearch").value.toUpperCase();
+            const tableBody = document.getElementById("userDataBody");
+            const rows = tableBody.getElementsByTagName("tr");
+            
+            for (let i = 0; i < rows.length; i++) {
+                const labelCell = rows[i].getElementsByTagName("td")[4]; // Assuming 'Label' is the 5th column
+                if (labelCell) {
+                    const labelText = labelCell.textContent || labelCell.innerText;
+                    rows[i].style.display = labelText.toUpperCase().indexOf(input) > -1 ? "" : "none";
+                }
+            }
+        }
+
+        function showContent(content) {
+            const analyticsContent = document.getElementById('analyticsContent');
+            const reportsContent = document.getElementById('reportsContent');
+
+            if (content === 'analytics') {
+                analyticsContent.style.display = 'block';
+                reportsContent.style.display = 'none';
+                document.querySelector('.active').classList.remove('active');
+                document.querySelector('a[onclick="showContent(\'analytics\')"]').classList.add('active');
+            } else if (content === 'reports') {
+                analyticsContent.style.display = 'none';
+                reportsContent.style.display = 'block';
+                document.querySelector('.active').classList.remove('active');
+                document.querySelector('a[onclick="showContent(\'reports\')"]').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
