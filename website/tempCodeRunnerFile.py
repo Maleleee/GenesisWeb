@@ -1,2 +1,1 @@
-
-    # Log when the prediction starts
+# Log when the prediction starts

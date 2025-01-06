@@ -241,3 +241,19 @@ body{
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
 }
+
+.signup-btn:hover {
+    background-color: #6E66CD;
+    color: white;
+}
+
+.login-btn:hover {
+    background-color: #6E66CD;
+    color: white;
+}
+
+#register:hover,
+#login:hover {
+    background-color: white;
+    color: #6E66CD;
+}

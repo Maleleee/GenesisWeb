@@ -1,0 +1,38 @@
+2024-11-05 17:35:52,817 - Model file not found.
+2024-11-05 17:35:52,831 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-11-05 17:35:52,831 - [33mPress CTRL+C to quit[0m
+2024-11-05 17:35:52,832 -  * Restarting with stat
+2024-11-05 17:35:57,335 - Model file not found.
+2024-11-05 17:35:57,345 -  * Debugger is active!
+2024-11-05 17:35:57,347 -  * Debugger PIN: 281-169-884
+2024-11-05 17:36:29,009 - 127.0.0.1 - - [05/Nov/2024 17:36:29] "GET / HTTP/1.1" 200 -
+2024-11-05 17:36:29,359 - 127.0.0.1 - - [05/Nov/2024 17:36:29] "[36mGET /static/stylemain.css HTTP/1.1[0m" 304 -
+2024-11-05 17:36:29,411 - 127.0.0.1 - - [05/Nov/2024 17:36:29] "[33mGET /static/images2/landingbg.jpg HTTP/1.1[0m" 404 -
+2024-11-05 17:36:31,196 - 127.0.0.1 - - [05/Nov/2024 17:36:31] "[32mGET /logout HTTP/1.1[0m" 302 -
+2024-11-05 17:36:31,516 - 127.0.0.1 - - [05/Nov/2024 17:36:31] "GET /login HTTP/1.1" 200 -
+2024-11-05 17:36:31,775 - 127.0.0.1 - - [05/Nov/2024 17:36:31] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2024-11-05 17:36:31,853 - 127.0.0.1 - - [05/Nov/2024 17:36:31] "[36mGET /static/function.js HTTP/1.1[0m" 304 -
+2024-11-05 17:36:31,854 - 127.0.0.1 - - [05/Nov/2024 17:36:31] "[36mGET /static/images/skies.jpg HTTP/1.1[0m" 304 -
+2024-11-05 17:36:37,029 - 127.0.0.1 - - [05/Nov/2024 17:36:37] "[32mPOST /login HTTP/1.1[0m" 302 -
+2024-11-05 17:36:37,353 - 127.0.0.1 - - [05/Nov/2024 17:36:37] "GET /admindash HTTP/1.1" 200 -
+2024-11-05 17:36:37,613 - 127.0.0.1 - - [05/Nov/2024 17:36:37] "[36mGET /static/styleadminv2.css HTTP/1.1[0m" 304 -
+2024-11-05 17:36:37,708 - 127.0.0.1 - - [05/Nov/2024 17:36:37] "[36mGET /static/images/genesisicon.png HTTP/1.1[0m" 304 -
+2024-11-05 17:36:37,709 - 127.0.0.1 - - [05/Nov/2024 17:36:37] "[36mGET /static/images/adminv2.png HTTP/1.1[0m" 304 -
+2024-11-05 17:36:37,711 - 127.0.0.1 - - [05/Nov/2024 17:36:37] "[33mGET /orders.js HTTP/1.1[0m" 404 -
+2024-11-05 17:36:37,714 - 127.0.0.1 - - [05/Nov/2024 17:36:37] "[36mGET /static/adminv2.js HTTP/1.1[0m" 304 -
+2024-11-05 17:36:51,629 - 127.0.0.1 - - [05/Nov/2024 17:36:51] "[32mGET /logout HTTP/1.1[0m" 302 -
+2024-11-05 17:36:51,941 - 127.0.0.1 - - [05/Nov/2024 17:36:51] "GET /login HTTP/1.1" 200 -
+2024-11-05 17:36:52,203 - 127.0.0.1 - - [05/Nov/2024 17:36:52] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2024-11-05 17:36:52,282 - 127.0.0.1 - - [05/Nov/2024 17:36:52] "[36mGET /static/function.js HTTP/1.1[0m" 304 -
+2024-11-05 17:36:52,283 - 127.0.0.1 - - [05/Nov/2024 17:36:52] "[36mGET /static/images/skies.jpg HTTP/1.1[0m" 304 -
+2024-11-05 17:36:53,031 - 127.0.0.1 - - [05/Nov/2024 17:36:53] "[32mGET /google-login HTTP/1.1[0m" 302 -
+2024-11-05 17:36:58,643 - 127.0.0.1 - - [05/Nov/2024 17:36:58] "[32mGET /google-authorized?code=4/0AVG7fiT4DJQqyzcBeGGpU4MRupPB0ZdGqO33lTuITbEhtkxqx4lb35tJUN2nZXVCEqMd6g&scope=email+profile+openid+https://www.googleapis.com/auth/userinfo.profile+https://www.googleapis.com/auth/userinfo.email&authuser=0&prompt=consent HTTP/1.1[0m" 302 -
+2024-11-05 17:36:58,654 - 127.0.0.1 - - [05/Nov/2024 17:36:58] "GET /userdash HTTP/1.1" 200 -
+2024-11-05 17:36:59,112 - 127.0.0.1 - - [05/Nov/2024 17:36:59] "[36mGET /static/styleuser.css HTTP/1.1[0m" 304 -
+2024-11-05 17:36:59,113 - 127.0.0.1 - - [05/Nov/2024 17:36:59] "[36mGET /static/userfunctions.js HTTP/1.1[0m" 304 -
+2024-11-05 17:37:03,061 - 127.0.0.1 - - [05/Nov/2024 17:37:03] "[32mGET /logout HTTP/1.1[0m" 302 -
+2024-11-05 17:37:03,374 - 127.0.0.1 - - [05/Nov/2024 17:37:03] "GET /login HTTP/1.1" 200 -
+2024-11-05 17:37:03,642 - 127.0.0.1 - - [05/Nov/2024 17:37:03] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2024-11-05 17:37:03,720 - 127.0.0.1 - - [05/Nov/2024 17:37:03] "[36mGET /static/function.js HTTP/1.1[0m" 304 -
+2024-11-05 17:37:03,732 - 127.0.0.1 - - [05/Nov/2024 17:37:03] "[36mGET /static/images/skies.jpg HTTP/1.1[0m" 304 -

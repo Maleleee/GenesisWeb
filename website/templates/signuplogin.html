@@ -37,7 +37,7 @@
                 {{ signup_form.username() }}
                 {{ signup_form.password.label }}
                 {{ signup_form.password() }}
-                {{ signup_form.submit() }}
+                {{ signup_form.submit(class='btn signup-btn') }}
             </form>
         </div>
 
@@ -55,7 +55,7 @@
                 {{ login_form.email() }}
                 {{ login_form.password.label }}
                 {{ login_form.password() }}
-                {{ login_form.submit() }}
+                {{ login_form.submit(class='btn login-btn') }}
                 <a href="{{ url_for('auth.forgot_password') }}">Forgot your password?</a>
             </form>
         </div>

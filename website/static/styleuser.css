@@ -1,197 +1,300 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --color-primary: #6C9BCF;
+    --color-danger: #FF0060;
+    --color-success: #1B9C85;
+    --color-warning: #F7D060;
+    --color-white: #fff;
+    --color-info-dark: #7d8da1;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.18);
+    --color-dark-variant: #677483;
+    --color-background: #f6f6f9;
+
+    --card-border-radius: 2rem;
+    --border-radius-1: 0.4rem;
+    --border-radius-2: 1.2rem;
+
+    --card-padding: 1.8rem;
+    --padding-1: 1.2rem;
+
+    --box-shadow: 0 2rem 3rem var(--color-light);
+}
+
+.dark-mode {
+    --color-background: #181a1e;
+    --color-white: #202528;
+    --color-dark: #edeffd;
+    --color-dark-variant: #a3bdcc;
+    --color-light: rgba(0, 0, 0, 0.4);
+    --box-shadow: 0 2rem 3rem var(--color-light);
+}
+
 
 * {
     margin: 0;
     padding: 0;
+    outline: 0;
+    appearance: none;
     border: none;
-    outline: none;
+    text-decoration: none;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
-html, body {
-    height: 100%;
-}
-
 body {
-    display: flex;
-    background-color: #0d1b2a; /* Dark blue background */
-    color: #fff; /* White text */
+    background-color: var(--color-background);
+    color: var(--color-dark);
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 80px; /* Small initial width */
-    height: 100vh;
-    background: #0a1733; /* Darker blue */
-    color: #fff;
-    overflow: hidden;
-    transition: width 0.3s ease-in-out; /* Smooth transition when hovering */
+.container {
+    display: grid;
+    width: 96%;
+    margin: 0 auto;
+    gap: 1.8rem;
+    grid-template-columns: 12rem auto 23rem;
 }
 
-.sidebar:hover {
-    width: 240px; /* Expand sidebar on hover */
+#menu-btn {
+    display: none; /* Hides the menu button */
 }
 
-.sidebar .menu {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar .menu li {
-    padding: 1.2rem;
-    margin: 8px 0;
-    border-radius: 8px;
-    transition: all 0.3s ease-in-out;
-    opacity: 0; /* Hidden by default */
-}
-
-.sidebar:hover .menu li {
-    opacity: 1; /* Show text on hover */
-    transition-delay: 0.2s; /* Slight delay for smooth appearance */
-}
-
-.sidebar .menu a {
-    color: #fff;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 14px;
-    white-space: nowrap;
-    opacity: 0; /* Hide links by default */
-}
-
-.sidebar:hover .menu a {
-    opacity: 1; /* Show links on hover */
-    transition: opacity 0.3s ease-in-out;
-}
-
-.sidebar i {
-    font-size: 1.5rem;
-    opacity: 1; /* Icons are always visible */
-    transition: all 0.3s ease-in-out;
-}
-
-.sidebar:hover i {
-    transition-delay: 0.1s;
-}
-
-.main--content {
-    margin-left: 80px; /* Adjust margin to match sidebar width */
-    flex-grow: 1;
-    padding: 1rem;
-    background: #14273d; /* Slightly lighter blue */
-    transition: margin-left 0.3s ease-in-out;
-}
-
-.sidebar:hover + .main--content {
-    margin-left: 240px; /* Adjust content when sidebar expands */
-}
-
-.header--wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #0a1733;
-    border-radius: 10px;
-    padding: 10px 2rem;
-    margin-bottom: 1rem;
-}
-
-.header--title {
-    color: #ffffff;
-}
-
-.user--info {
-    display: flex;
-    align-items: center;
-}
-
-.user--info img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-left: 1rem;
-}
-
-.account-balance {
-    background: #0a1733;
-    padding: 2rem;
-    border-radius: 10px;
+.account-balance-container {
+    background-color: var(--color-white);
+    color: var(--color-dark);
+    padding: 1.5rem;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
     margin-bottom: 1.5rem;
     text-align: center;
 }
 
-.balance-display {
-    font-size: 2rem;
-    color: #5bc0de;
+.account-balance-container h3 {
+    margin-bottom: 1rem;
 }
 
-.big-card {
-    background: #0a1733;
+aside {
+    height: 100vh;
+}
+
+aside .toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.4rem;
+}
+
+aside .toggle .logo {
+    display: flex;
+    gap: 0.5rem;
+}
+
+aside .toggle .logo img {
+    width: 2rem;
+    height: 2rem;
+}
+
+aside .toggle .close {
+    padding-right: 1rem;
+    display: none;
+}
+
+aside .sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-white);
+    box-shadow: var(--box-shadow);
+    border-radius: 15px;
+    height: 88vh;
+    position: relative;
+    top: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+aside .sidebar:hover {
+    box-shadow: none;
+}
+
+aside .sidebar a {
+    display: flex;
+    align-items: center;
+    color: var(--color-info-dark);
+    height: 3.7rem;
+    gap: 1rem;
+    position: relative;
+    margin-left: 2rem;
+    transition: all 0.3s ease;
+}
+
+aside .sidebar a span {
+    font-size: 1.6rem;
+    transition: all 0.3s ease;
+}
+
+aside .sidebar a:last-child {
+    position: absolute;
+    bottom: 2rem;
+    width: 100%;
+}
+
+aside .sidebar a.active {
+    width: 100%;
+    color: var(--color-primary);
+    background-color: var(--color-light);
+    margin-left: 0;
+}
+
+aside .sidebar a.active::before {
+    content: '';
+    width: 6px;
+    height: 18px;
+    background-color: var(--color-primary);
+}
+
+aside .sidebar a.active span {
+    color: var(--color-primary);
+    margin-left: calc(1rem - 3px);
+}
+
+aside .sidebar a:hover {
+    color: var(--color-primary);
+}
+
+aside .sidebar a:hover span {
+    margin-left: 0.6rem;
+}
+
+.sidebar h3 {
+    font-size: 1rem; /* Adjust the size as needed */
+}
+
+main {
+    margin-top: 1.4rem;
+}
+
+.greeting-card {
+    background-color: var(--color-white);
+    color: var(--color-dark);
     padding: 1.5rem;
-    border-radius: 10px;
+    border-radius: var(--card-border-radius);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--box-shadow);
+}
+
+.card--container {
+    margin-top: 1.5rem;
 }
 
 .card--wrapper {
+    margin-top: 2rem;
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Change to 3 columns for the cards */
-    gap: 1rem; /* Maintain the space between cards */
-    margin: 0; /* Ensure no extra margins on the wrapper */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
 }
 
-
 .service--card {
-    background: #1f4a73;
-    height: 80px; /* Maintain same height */
+    background-color: var(--color-white);
+    height: 100px;
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
+    flex-direction: column;
     justify-content: center;
-    align-items: center; /* Center items in card */
-    border-radius: 10px;
-    transition: all 0.5s ease-in-out;
-    padding: 0.5rem; /* Padding inside the card */
-    flex-grow: 1; /* Allow cards to grow equally */
-    min-width: 150px; /* Prevent shrinking */
+    align-items: center;
+    border-radius: var(--border-radius-1);
+    transition: all 0.3s ease-in-out;
+    padding: 1rem;
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+}
+
+.service--card:hover {
+    box-shadow: 0 0 10px var(--color-primary);
+    transform: translateY(-5px);
 }
 
 .service--card i {
-    font-size: 2rem; /* Icon size */
-    color: #fff; /* Icon color */
-    margin-bottom: 0.5rem; /* Space below icon */
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
 }
 
 .service--card span {
-    color: #fff; /* Text color */
-    font-size: 0.9rem; /* Font size for service name */
+    color: var(--color-dark);
+    font-size: 1rem;
+    font-weight: 500;
 }
 
-.tabular--wrapper {
-    background: #0a1733;
-    margin-top: 1rem;
-    border-radius: 10px;
-    padding: 0.5rem;
+.right-section {
+    flex-grow: 1; /* Allow the right section to take up available space */
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: #fff;
+.right-section .nav {
+    display: flex;
+    justify-content: end;
+    gap: 2rem;
 }
 
-thead {
-    background: #5bc0de;
+.right-section .dark-mode {
+    background-color: var(--color-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 1.6rem;
+    width: 4.2rem;
+    cursor: pointer;
+    border-radius: var(--border-radius-1);
 }
 
-tbody {
-    background: #14273d;
+.right-section .dark-mode span {
+    font-size: 1.2rem;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-td, th {
-    padding: 15px;
+.right-section .dark-mode span.active {
+    background-color: var(--color-primary);
+    color: white;
+    border-radius: var(--border-radius-1);
+}
+
+.right-section .profile {
+    display: flex;
+    gap: 2rem;
+    text-align: right;
+}
+
+.right-section .profile .profile-photo {
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.styled-button {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.88rem;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.styled-button:hover {
+    background-color: var(--color-success);
 }
 
 .modal {
@@ -204,15 +307,16 @@ td, th {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    display: flex; /* Use flexbox for centering */
     justify-content: center; /* Center the modal horizontally */
     align-items: center; /* Center the modal vertically */
 }
 
 .modal-content {
-    background-color: #1f4a73; /* Match the website's color scheme */
+    background-color: var(--color-primary); /* Use primary color from the website's color scheme */
     margin: auto;
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid var(--color-dark-variant); /* Use a variant of the dark color for the border */
     width: 80%; /* Could be more or less, depending on screen size */
     max-width: 600px; /* Maximum width of modal */
     border-radius: 10px; /* Rounded corners for modern look */
@@ -220,11 +324,11 @@ td, th {
 }
 
 .modal h3 {
-    color: #fff; /* White title text for better contrast */
+    color: var(--color-white); /* White title text for better contrast */
 }
 
 .modal label {
-    color: #fff; /* White label text */
+    color: var(--color-white); /* White label text */
 }
 
 .modal input {
@@ -233,11 +337,13 @@ td, th {
     border-radius: 5px; /* Rounded corners */
     width: 100%;
     margin-bottom: 10px;
+    background-color: var(--color-light); /* Light background for inputs */
+    color: var(--color-dark); /* Dark text color for inputs */
 }
 
 .modal .btn {
-    background-color: #5bc0de; /* Base button color */
-    color: #fff; /* Text color */
+    background-color: var(--color-success); /* Use success color for buttons */
+    color: var(--color-white); /* Text color */
     border: none;
     padding: 12px 20px; /* Increased padding for a more comfortable click area */
     border-radius: 25px; /* More rounded corners for a modern look */
@@ -248,14 +354,13 @@ td, th {
 }
 
 .modal .btn:hover {
-    background-color: #4da3c0; /* Darker shade on hover */
+    background-color: var(--color-warning); /* Use warning color on hover */
     transform: translateY(-2px); /* Slight lift effect on hover */
 }
 
 .modal .btn:active {
     transform: translateY(0); /* Reset lift effect when button is active */
 }
-
 
 .table-container {
     max-height: 400px; /* Set max height for scrolling */
@@ -270,9 +375,34 @@ td, th {
 .modal th,
 .modal td {
     padding: 15px;
-    color: #fff; /* White text color for table */
+    color: var(--color-white); /* White text color for table */
 }
 
 .modal thead {
-    background: #5bc0de; /* Header background */
+    background: var(--color-primary); /* Header background using primary color */
+}
+
+.notifications {
+    background-color: var(--color-white);
+    box-shadow: var(--box-shadow);
+    border-radius: var(--card-border-radius);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    width: 100%; /* Ensure it takes the full width of the right section */
+    flex-grow: 1; /* Allow the notifications to expand */
+}
+
+.notifications h3 {
+    margin-bottom: 1rem;
+    color: var(--color-dark);
+}
+
+.notifications ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.notifications li {
+    margin-bottom: 0.5rem;
+    color: var(--color-dark-variant);
 }
