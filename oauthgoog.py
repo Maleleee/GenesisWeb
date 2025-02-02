@@ -2,11 +2,11 @@ import requests
 from flask import Flask, redirect, url_for, session, request
 
 app = Flask(__name__)
-app.secret_key = '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'
+app.secret_key = ##
 
 # OAuth configuration for Google
-CLIENT_ID = '992785662567-oeltunnotl5ft2432u206iv9c980emj2.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
+CLIENT_ID = ##
+CLIENT_SECRET = ##
 REDIRECT_URI = 'http://localhost:5000/oauth_callback'
 AUTHORIZE_URL = 'https://accounts.google.com/o/oauth2/auth'
 TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
